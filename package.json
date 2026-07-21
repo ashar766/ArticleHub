@@ -1,0 +1,26 @@
+{
+  "name": "articlehub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A full-stack article publishing platform built with React, Express, TypeScript, Prisma, and PostgreSQL.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm run dev --workspace=backend",
+    "build": "npm run build --workspace=backend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashar766/ArticleHub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ashar766/ArticleHub/issues"
+  },
+  "homepage": "https://github.com/ashar766/ArticleHub#readme",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}
