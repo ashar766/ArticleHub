@@ -3,15 +3,54 @@ import { ArticleController } from "../controllers/article.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { CreateArticleSchema } from "@articlehub/shared";
+import { authorize } from "../middlewares/authorize.middleware.js";
+
 
 const router = Router();
 const articleController = new ArticleController();
+
+router.get("/", articleController.getAll.bind(articleController));
+
+router.get(
+  "/pending",
+  authenticate,
+  authorize("ADMIN"),
+  articleController.getPendingArticles.bind(articleController)
+);
+
+router.get(
+  "/me",
+  authenticate,
+  articleController.getMyArticles.bind(articleController)
+);
+
+router.patch(
+  "/:id/approve",
+  authenticate,
+  authorize("ADMIN"),
+  articleController.approve.bind(articleController)
+);
+
+router.get("/:id", articleController.getById.bind(articleController));
 
 router.post(
   "/",
   authenticate,
   validate(CreateArticleSchema),
   articleController.create.bind(articleController)
+);
+
+router.put(
+  "/:id",
+  authenticate,
+  validate(CreateArticleSchema),
+  articleController.update.bind(articleController)
+);
+
+router.delete(
+  "/:id",
+  authenticate,
+  articleController.delete.bind(articleController)
 );
 
 export default router;
