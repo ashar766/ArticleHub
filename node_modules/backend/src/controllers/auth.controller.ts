@@ -12,4 +12,16 @@ export class AuthController {
 
   return res.status(201).json(result);
   }
+
+  async login(req: Request, res: Response) {
+  const result = await this.authService.login(req.body);
+
+  return res.json(result);
+  }
+
+  async profile(req: Request, res: Response) {
+    return res.json({
+      user: req.user,
+    });
+  }
 }

@@ -23,4 +23,20 @@ model User {
   role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  articles  Article[]
+}
+
+model Article {
+  id         String   @id @default(uuid())
+  title      String
+  content    String
+  image      String?
+  approved   Boolean  @default(false)
+
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id])
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
