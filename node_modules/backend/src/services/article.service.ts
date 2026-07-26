@@ -1,7 +1,16 @@
 import { prisma } from "../config/prisma.js";
+import createHttpError from "http-errors";
+import { CreateArticleSchema } from "@articlehub/shared";
+import { z } from "zod";
+
+type CreateArticleDto = z.infer<typeof CreateArticleSchema>;
 
 export class ArticleService {
-  async create(data: any, userId: string) {
+
+  async create(
+    data: CreateArticleDto,
+    userId: string
+  ) {
     const article = await prisma.article.create({
       data: {
         title: data.title,
@@ -17,140 +26,254 @@ export class ArticleService {
     };
   }
 
+
   async getAll() {
     const articles = await prisma.article.findMany({
-        where: {
+      where: {
         approved: true,
-        },
+      },
     });
 
     return {
-        message: "Articles fetched successfully",
-        articles,
+      message: "Articles fetched successfully",
+      articles,
     };
   }
 
+
   async getById(id: string) {
+
     const article = await prisma.article.findFirst({
       where: {
         id,
         approved: true,
-        },
+      },
     });
 
+
+    if (!article) {
+      throw new createHttpError.NotFound(
+        "Article not found"
+      );
+    }
+
+
     return {
-        message: "Article fetched successfully",
-        article,
+      message: "Article fetched successfully",
+      article,
     };
   }
+
+
 
   async getMyArticles(userId: string) {
+
     const articles = await prisma.article.findMany({
-        where: {
+      where: {
         authorId: userId,
-        },
+      },
     });
 
+
     return {
-        message: "My articles fetched successfully",
-        articles,
+      message: "My articles fetched successfully",
+      articles,
     };
   }
 
-  async update(id: string, userId: string, data: any) {
+
+
+  async update(
+    id: string,
+    userId: string,
+    role: string,
+    data: Partial<CreateArticleDto>
+  ) {
+
     const article = await prisma.article.findUnique({
-        where: {
+      where: {
         id,
-        },
+      },
     });
 
+
     if (!article) {
-        throw new Error("Article not found");
+      throw new createHttpError.NotFound(
+        "Article not found"
+      );
     }
 
-    if (article.authorId !== userId) {
-        throw new Error("You are not allowed to update this article");
+
+    // User can edit only own article
+    // Admin can edit any article
+    if (
+      article.authorId !== userId &&
+      role !== "ADMIN"
+    ) {
+      throw new createHttpError.Forbidden(
+        "You are not allowed to update this article"
+      );
     }
 
-    const updatedArticle = await prisma.article.update({
+
+    const updatedArticle =
+      await prisma.article.update({
         where: {
-        id,
+          id,
         },
         data: {
-        title: data.title,
-        content: data.content,
-        image: data.image,
+          title: data.title,
+          content: data.content,
+          image: data.image,
         },
-    });
+      });
+
 
     return {
-        message: "Article updated successfully",
-        article: updatedArticle,
+      message: "Article updated successfully",
+      article: updatedArticle,
     };
   }
 
-  async delete(id: string, userId: string) {
+
+
+
+  async delete(
+    id: string,
+    userId: string,
+    role: string
+  ) {
+
     const article = await prisma.article.findUnique({
-        where: {
+      where: {
         id,
-        },
+      },
     });
 
+
     if (!article) {
-        throw new Error("Article not found");
+      throw new createHttpError.NotFound(
+        "Article not found"
+      );
     }
 
-    if (article.authorId !== userId) {
-        throw new Error("You are not allowed to delete this article");
+
+    // User can delete only own article
+    // Admin can delete any article
+    if (
+      article.authorId !== userId &&
+      role !== "ADMIN"
+    ) {
+      throw new createHttpError.Forbidden(
+        "You are not allowed to delete this article"
+      );
     }
+
 
     await prisma.article.delete({
-        where: {
+      where: {
         id,
-        },
+      },
     });
 
+
     return {
-        message: "Article deleted successfully",
+      message: "Article deleted successfully",
     };
   }
+
+
+
 
   async getPendingArticles() {
-    const articles = await prisma.article.findMany({
+
+    const articles =
+      await prisma.article.findMany({
         where: {
-        approved: false,
+          approved: false,
         },
-    });
+        include: {
+          author: true,
+        },
+      });
+
 
     return {
-        message: "Pending articles fetched successfully",
-        articles,
+      message: "Pending articles fetched successfully",
+      articles,
     };
   }
+
+
+
 
   async approve(id: string) {
-    const article = await prisma.article.findUnique({
+
+    const article =
+      await prisma.article.findUnique({
         where: {
-        id,
+          id,
         },
-    });
+      });
+
 
     if (!article) {
-        throw new Error("Article not found");
+      throw new createHttpError.NotFound(
+        "Article not found"
+      );
     }
 
-    const approvedArticle = await prisma.article.update({
+
+    const approvedArticle =
+      await prisma.article.update({
         where: {
-        id,
+          id,
         },
         data: {
-        approved: true,
+          approved: true,
         },
-    });
+      });
+
 
     return {
-        message: "Article approved successfully",
-        article: approvedArticle,
+      message: "Article approved successfully",
+      article: approvedArticle,
     };
   }
+
+
+
+
+
+  // Admin rejects article
+  // Deletes it completely
+  async reject(id: string) {
+
+    const article =
+      await prisma.article.findUnique({
+        where: {
+          id,
+        },
+      });
+
+
+    if (!article) {
+      throw new createHttpError.NotFound(
+        "Article not found"
+      );
+    }
+
+
+    await prisma.article.delete({
+      where: {
+        id,
+      },
+    });
+
+
+    return {
+      message: "Article rejected successfully",
+    };
+  }
+
 }

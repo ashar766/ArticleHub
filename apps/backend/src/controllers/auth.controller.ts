@@ -25,4 +25,20 @@ export class AuthController {
     });
   }
   
+  async forgotPassword(req: Request, res: Response) {
+    const result = await this.authService.forgotPassword(
+      req.body.email
+    );
+
+    return res.json(result);
+  }
+
+  async resetPassword(req: Request, res: Response) {
+    const result = await this.authService.resetPassword(
+      req.body.token,
+      req.body.password
+    );
+
+    return res.json(result);
+  }
 }
