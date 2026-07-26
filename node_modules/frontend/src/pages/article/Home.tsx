@@ -4,12 +4,13 @@ import { getAllArticles } from "../../services/article.services";
 
 import ArticleCard from "../../components/article/ArticleCard"
 
-import UserLayout from "../../layouts/UserLayout";
+import MainLayout from "../../layouts/MainLayout";
 
 type Article = {
   id: string;
   title: string;
   content: string;
+  image?: string;
 };
 
 function Home() {
@@ -30,7 +31,7 @@ function Home() {
   };
 
   return (
-    <UserLayout>
+    <MainLayout>
       <div className="space-y-6">
         <h1 className="text-3xl font-bold">
           Latest Articles
@@ -45,7 +46,7 @@ function Home() {
           ))}
         </div>
       </div>
-    </UserLayout>
+    </MainLayout>
   );
 }
 

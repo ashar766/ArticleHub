@@ -5,6 +5,8 @@ import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import articleRoutes from "./routes/article.routes.js";
 
+import path from "node:path";
+
 const app = express();
 
 app.use(
@@ -15,6 +17,14 @@ app.use(
 );
 
 app.use(express.json());
+
+
+// Serve uploaded images
+app.use(
+  "/uploads",
+  express.static( path.join(process.cwd(), "uploads") )
+);
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/articles", articleRoutes);

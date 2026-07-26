@@ -1,10 +1,7 @@
 import api from "../api/axios";
 
 export const createArticle = async (
-  data: {
-    title: string;
-    content: string;
-  },
+  data: FormData,
   token: string
 ) => {
   const response = await api.post(
@@ -13,6 +10,7 @@ export const createArticle = async (
     {
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
       },
     }
   );
@@ -116,6 +114,22 @@ export const rejectArticle = async (
 ) => {
   const response = await api.delete(
     `/articles/${id}/reject`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+export const getArticleById = async (
+  id: string,
+  token: string
+) => {
+  const response = await api.get(
+    `/articles/${id}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

@@ -24,6 +24,11 @@ router.post(
   authController.login.bind(authController)
 );
 
+router.post(
+  "/refresh-token",
+  authController.refreshToken.bind(authController)
+);
+
 router.get(
   "/profile", 
   authenticate,
@@ -41,6 +46,7 @@ router.post(
   validate(ResetPasswordSchema),
   authController.resetPassword.bind(authController)
 );
+
 
 console.log("✅ Auth routes loaded");
 export default router;

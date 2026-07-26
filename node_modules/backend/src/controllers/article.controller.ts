@@ -7,11 +7,19 @@ export class ArticleController {
 
   async create(req: Request, res: Response) {
 
-    const result =
-      await this.articleService.create(
-        req.body,
-        req.user!.id
-      );
+    const articleData = {
+      ...req.body,
+      image: req.file
+        ? `/uploads/${req.file.filename}`
+        : undefined,
+    };
+
+
+    const result = await this.articleService.create(
+      articleData,
+      req.user!.id
+    );
+
 
     return res.status(201).json(result);
   }

@@ -19,6 +19,15 @@ export class AuthController {
   return res.json(result);
   }
 
+  async refreshToken(req: Request, res: Response) {
+    const result = await this.authService.refreshToken(
+      req.body.refreshToken
+    );
+
+    return res.json(result);
+  }
+
+
   async profile(req: Request, res: Response) {
     return res.json({
       user: req.user,
@@ -41,4 +50,5 @@ export class AuthController {
 
     return res.json(result);
   }
+
 }

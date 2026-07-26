@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import UserLayout from "../../layouts/UserLayout";
+import MainLayout from "../../layouts/MainLayout";
 
 import {
   getMyArticles,
@@ -13,6 +13,7 @@ type Article = {
   title: string;
   content: string;
   approved: boolean;
+  image?: string;
 };
 
 function MyArticles() {
@@ -57,7 +58,7 @@ function MyArticles() {
   };
 
   return (
-    <UserLayout>
+    <MainLayout>
       <h1 className="mb-6 text-3xl font-bold">
         My Articles
       </h1>
@@ -89,6 +90,14 @@ function MyArticles() {
                 </span>
               </div>
 
+              {article.image && (
+                <img
+                  src={`http://localhost:3000${article.image}`}
+                  alt={article.title}
+                  className="mt-4 h-64 w-full rounded-lg object-cover"
+                />
+              )}
+
               <p className="mt-3 text-gray-700">
                 {article.content}
               </p>
@@ -114,7 +123,7 @@ function MyArticles() {
           ))}
         </div>
       )}
-    </UserLayout>
+    </MainLayout>
   );
 }
 

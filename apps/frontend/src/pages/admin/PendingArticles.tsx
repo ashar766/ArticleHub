@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import AdminLayout from "../../layouts/AdminLayout";
+import MainLayout from "../../layouts/MainLayout";
 
 import {
   getPendingArticles,
@@ -15,6 +15,7 @@ type Article = {
   id: string;
   title: string;
   content: string;
+  image?: string;
 };
 
 
@@ -105,7 +106,7 @@ function PendingArticles() {
 
 
   return (
-    <AdminLayout>
+    <MainLayout>
 
       <h1 className="text-3xl font-bold">
         Pending Articles
@@ -132,6 +133,13 @@ function PendingArticles() {
               key={article.id}
               className="rounded-lg bg-white p-5 shadow"
             >
+              {article.image && (
+                <img
+                  src={`http://localhost:3000/${article.image}`}
+                  alt={article.title}
+                  className="mb-4 h-48 w-full rounded-lg object-cover"
+                />
+              )}
 
               <h2 className="text-xl font-bold">
                 {article.title}
@@ -179,7 +187,7 @@ function PendingArticles() {
       </div>
 
 
-    </AdminLayout>
+    </MainLayout>
   );
 }
 

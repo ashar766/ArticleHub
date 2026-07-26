@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { prisma } from "../config/prisma.js";
 import { TokenService } from "./token.services.js";
 import { EmailService } from "./email.service.js";
@@ -47,11 +48,13 @@ export class AuthService {
   }
 
   async login(data: LoginDto) {
+
     const user = await prisma.user.findUnique({
       where: {
         email: data.email,
       },
     });
+
 
     if (!user) {
       throw new createHttpError.Unauthorized(
@@ -59,10 +62,12 @@ export class AuthService {
       );
     }
 
+
     const isMatch = await bcrypt.compare(
       data.password,
       user.password
     );
+
 
     if (!isMatch) {
       throw new createHttpError.Unauthorized(
@@ -70,20 +75,110 @@ export class AuthService {
       );
     }
 
-    const accessToken = this.tokenService.generateAccessToken({
+
+    const payload = {
       id: user.id,
       email: user.email,
       role: user.role,
+    };
+
+
+    const accessToken =
+      this.tokenService.generateAccessToken(
+        payload
+      );
+
+
+    const refreshToken =
+      this.tokenService.generateRefreshToken(
+        payload
+      );
+
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        refreshToken,
+      },
     });
 
-    const { password, ...userWithoutPassword } = user;
+
+    const { password, ...userWithoutPassword } = updatedUser;
+
 
     return {
       message: "Login successful",
       accessToken,
+      refreshToken,
       user: userWithoutPassword,
     };
   }
+
+  async refreshToken(refreshToken: string) {
+
+    if (!refreshToken) {
+      throw new createHttpError.Unauthorized(
+        "Refresh token required"
+      );
+    }
+
+
+    let decoded: any;
+
+
+    try {
+
+      decoded = jwt.verify(
+        refreshToken,
+        process.env.JWT_REFRESH_SECRET!
+      );
+
+    } catch(error) {
+
+      throw new createHttpError.Unauthorized(
+        "Invalid refresh token"
+      );
+
+    }
+
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: decoded.id,
+      },
+    });
+
+
+    if (!user) {
+      throw new createHttpError.Unauthorized(
+        "User not found"
+      );
+    }
+
+
+    if (user.refreshToken !== refreshToken) {
+      throw new createHttpError.Unauthorized(
+        "Refresh token mismatch"
+      );
+    }
+
+
+    const newAccessToken =
+      this.tokenService.generateAccessToken({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+
+    return {
+      message: "Access token refreshed",
+      accessToken: newAccessToken,
+    };
+
+  }  
 
   async forgotPassword(email: string) {
     const user = await prisma.user.findUnique({

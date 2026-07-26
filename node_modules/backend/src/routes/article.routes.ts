@@ -9,6 +9,7 @@ import { CreateArticleSchema } from "@articlehub/shared";
 
 import { authorize } from "../middlewares/authorize.middleware.js";
 
+import { upload } from "../middlewares/upload.middleware.js";
 
 const router = Router();
 
@@ -96,7 +97,8 @@ router.get(
 router.post(
   "/",
   authenticate,
-  validate(CreateArticleSchema),
+  upload.single("image"),
+  //validate(CreateArticleSchema),
   articleController.create.bind(
     articleController
   )

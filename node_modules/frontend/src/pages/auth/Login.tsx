@@ -32,7 +32,8 @@ function Login() {
 
       saveLogin(
         response.user,
-        response.accessToken
+        response.accessToken,
+        response.refreshToken
       );
 
       if (response.user.role === "ADMIN") {
