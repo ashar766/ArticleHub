@@ -1,2 +1,9 @@
 {
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.trimTrailingWhitespaceInRegexAndStrings": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "notebook.insertFinalNewline": true,
+  "files.trimFinalNewlines": true
 }

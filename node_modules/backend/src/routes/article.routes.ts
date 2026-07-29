@@ -15,122 +15,70 @@ const router = Router();
 
 const articleController = new ArticleController();
 
-
-
 // Public - approved articles
-router.get(
-  "/",
-  articleController.getAll.bind(articleController)
-);
-
-
-
+router.get("/", articleController.getAll.bind(articleController));
 
 // Admin - pending articles
 router.get(
   "/pending",
   authenticate,
   authorize("ADMIN"),
-  articleController.getPendingArticles.bind(
-    articleController
-  )
+  articleController.getPendingArticles.bind(articleController),
 );
-
-
-
 
 // User/Admin - own articles
 router.get(
   "/me",
   authenticate,
-  articleController.getMyArticles.bind(
-    articleController
-  )
+  articleController.getMyArticles.bind(articleController),
 );
-
-
-
-
 
 // Admin approve article
 router.patch(
   "/:id/approve",
   authenticate,
   authorize("ADMIN"),
-  articleController.approve.bind(
-    articleController
-  )
+  articleController.approve.bind(articleController),
 );
 
-
-
-
-
 // Admin reject article
-// deletes article completely
-router.delete(
+router.patch(
   "/:id/reject",
   authenticate,
   authorize("ADMIN"),
-  articleController.reject.bind(
-    articleController
-  )
+  articleController.reject.bind(articleController),
 );
 
-
-
-
-
-// Single approved article
+// Single article
 router.get(
   "/:id",
-  articleController.getById.bind(
-    articleController
-  )
+  authenticate,
+  articleController.getById.bind(articleController),
 );
 
-
-
-
-
-// User/Admin create article
+// Create article with image
 router.post(
   "/",
   authenticate,
   upload.single("image"),
-  //validate(CreateArticleSchema),
-  articleController.create.bind(
-    articleController
-  )
+  validate(CreateArticleSchema),
+  articleController.create.bind(articleController),
 );
 
-
-
-
-
-// User/Admin update article
+// Update article with image
 router.put(
   "/:id",
   authenticate,
+  upload.single("image"),
   validate(CreateArticleSchema),
-  articleController.update.bind(
-    articleController
-  )
+  articleController.update.bind(articleController),
 );
 
-
-
-
-
-// User/Admin delete article
+// Delete own article
 router.delete(
   "/:id",
   authenticate,
-  articleController.delete.bind(
-    articleController
-  )
+  articleController.delete.bind(articleController),
 );
-
-
 
 export default router;

@@ -7,6 +7,7 @@ import { signup } from "../../services/auth.services";
 import AuthLayout from "../../layouts/AuthLayout";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
+import { Link } from "react-router-dom";
 
 type SignupDto = z.infer<typeof SignupSchema>;
 
@@ -32,10 +33,7 @@ function Signup() {
 
   return (
     <AuthLayout title="Create Account">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-4"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Input
           label="First Name"
           {...register("firstName")}
@@ -62,12 +60,13 @@ function Signup() {
           error={errors.password?.message}
         />
 
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-        >
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Creating..." : "Sign Up"}
         </Button>
+
+        <Link to="/login" className="text-blue-600 hover:underline">
+          Already have an account? Log in
+        </Link>
       </form>
     </AuthLayout>
   );

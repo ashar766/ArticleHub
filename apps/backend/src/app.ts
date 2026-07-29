@@ -4,6 +4,7 @@ import cors from "cors";
 import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import articleRoutes from "./routes/article.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
 
 import path from "node:path";
 
@@ -13,21 +14,17 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json());
 
-
 // Serve uploaded images
-app.use(
-  "/uploads",
-  express.static( path.join(process.cwd(), "uploads") )
-);
-
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/articles", articleRoutes);
+app.use("/api/notifications", notificationRoutes);
 app.use(healthRoutes);
 
 export default app;

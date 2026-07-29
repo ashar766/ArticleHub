@@ -23,10 +23,7 @@ function ResetPassword() {
 
   const onSubmit = async (data: ResetPasswordDto) => {
     try {
-      const response = await resetPassword(
-        data.token,
-        data.password
-      );
+      const response = await resetPassword(data.token, data.password);
 
       alert(response.message);
 
@@ -39,10 +36,7 @@ function ResetPassword() {
 
   return (
     <AuthLayout title="Reset Password">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-4"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Input
           label="Reset Token"
           type="text"
@@ -61,13 +55,8 @@ function ResetPassword() {
           error={errors.password?.message}
         />
 
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-        >
-          {isSubmitting
-            ? "Updating..."
-            : "Reset Password"}
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Updating..." : "Reset Password"}
         </Button>
       </form>
     </AuthLayout>

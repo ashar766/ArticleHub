@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { getAllArticles } from "../../services/article.services";
 
-import ArticleCard from "../../components/article/ArticleCard"
+import ArticleCard from "../../components/article/ArticleCard";
 
 import MainLayout from "../../layouts/MainLayout";
 
@@ -11,7 +11,7 @@ type Article = {
   title: string;
   content: string;
   image?: string;
-};
+}; //its just telling what the article should look like.
 
 function Home() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -33,16 +33,11 @@ function Home() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">
-          Latest Articles
-        </h1>
+        <h1 className="text-3xl font-bold">Latest Articles</h1>
 
         <div className="space-y-5">
           {articles.map((article) => (
-            <ArticleCard
-              key={article.id}
-              article={article}
-            />
+            <ArticleCard key={article.id} article={article} />
           ))}
         </div>
       </div>

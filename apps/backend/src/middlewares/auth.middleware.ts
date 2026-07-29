@@ -4,9 +4,9 @@ import jwt from "jsonwebtoken";
 export const authenticate = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
-const authHeader = req.headers.authorization;
+  const authHeader = req.headers.authorization;
 
   if (!authHeader) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -19,7 +19,11 @@ const authHeader = req.headers.authorization;
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {id: string; email: string; role: string;  };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      id: string;
+      email: string;
+      role: string;
+    };
     req.user = decoded;
     next();
   } catch {

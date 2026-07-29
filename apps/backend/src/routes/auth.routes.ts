@@ -15,38 +15,34 @@ const authController = new AuthController();
 router.post(
   "/signup",
   validate(SignupSchema),
-  authController.signup.bind(authController)
+  authController.signup.bind(authController),
 );
 
 router.post(
   "/login",
   validate(LoginSchema),
-  authController.login.bind(authController)
+  authController.login.bind(authController),
 );
 
-router.post(
-  "/refresh-token",
-  authController.refreshToken.bind(authController)
-);
+router.post("/refresh-token", authController.refreshToken.bind(authController));
 
 router.get(
-  "/profile", 
+  "/profile",
   authenticate,
-  authController.profile.bind(authController)
+  authController.profile.bind(authController),
 );
 
 router.post(
   "/forgot-password",
   validate(ForgotPasswordSchema),
-  authController.forgotPassword.bind(authController)
+  authController.forgotPassword.bind(authController),
 );
 
 router.post(
   "/reset-password",
   validate(ResetPasswordSchema),
-  authController.resetPassword.bind(authController)
+  authController.resetPassword.bind(authController),
 );
-
 
 console.log("✅ Auth routes loaded");
 export default router;

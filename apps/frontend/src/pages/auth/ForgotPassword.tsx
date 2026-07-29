@@ -3,6 +3,7 @@ import AuthLayout from "../../layouts/AuthLayout";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 import { forgotPassword } from "../../services/auth.services";
+import { Link } from "react-router-dom";
 
 type ForgotPasswordDto = {
   email: string;
@@ -28,10 +29,7 @@ function ForgotPassword() {
 
   return (
     <AuthLayout title="Forgot Password">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-4"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Input
           label="Email"
           type="email"
@@ -41,14 +39,19 @@ function ForgotPassword() {
           error={errors.email?.message}
         />
 
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-        >
-          {isSubmitting
-            ? "Sending..."
-            : "Send Reset Link"}
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Sending..." : "Send Reset Link"}
         </Button>
+
+        <div className="flex justify-between text-sm">
+          <Link to="/login" className="text-blue-600 hover:underline">
+            Login
+          </Link>
+
+          <Link to="/signup" className="text-blue-600 hover:underline">
+            Create Account
+          </Link>
+        </div>
       </form>
     </AuthLayout>
   );

@@ -6,38 +6,33 @@ export class AuthController {
   private authService = new AuthService();
 
   async signup(req: Request, res: Response) {
-  console.log("Controller:", req.body);
+    console.log("Controller:", req.body);
 
-  const result = await this.authService.signup(req.body);
+    const result = await this.authService.signup(req.body);
 
-  return res.status(201).json(result);
+    return res.status(201).json(result);
   }
 
   async login(req: Request, res: Response) {
-  const result = await this.authService.login(req.body);
-
-  return res.json(result);
-  }
-
-  async refreshToken(req: Request, res: Response) {
-    const result = await this.authService.refreshToken(
-      req.body.refreshToken
-    );
+    const result = await this.authService.login(req.body);
 
     return res.json(result);
   }
 
+  async refreshToken(req: Request, res: Response) {
+    const result = await this.authService.refreshToken(req.body.refreshToken);
+
+    return res.json(result);
+  }
 
   async profile(req: Request, res: Response) {
     return res.json({
       user: req.user,
     });
   }
-  
+
   async forgotPassword(req: Request, res: Response) {
-    const result = await this.authService.forgotPassword(
-      req.body.email
-    );
+    const result = await this.authService.forgotPassword(req.body.email);
 
     return res.json(result);
   }
@@ -45,10 +40,9 @@ export class AuthController {
   async resetPassword(req: Request, res: Response) {
     const result = await this.authService.resetPassword(
       req.body.token,
-      req.body.password
+      req.body.password,
     );
 
     return res.json(result);
   }
-
 }

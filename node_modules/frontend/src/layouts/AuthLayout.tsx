@@ -5,10 +5,7 @@ type AuthLayoutProps = {
   children: ReactNode;
 };
 
-function AuthLayout({
-  title,
-  children,
-}: AuthLayoutProps) {
+function AuthLayout({ title, children }: AuthLayoutProps) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100">
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">

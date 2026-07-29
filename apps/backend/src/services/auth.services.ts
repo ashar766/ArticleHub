@@ -39,7 +39,7 @@ export class AuthService {
       },
     });
 
-    const { password, ...userWithoutPassword } = user;
+    const { password, ...userWithoutPassword } = user; //when output dto will be created no need for this
 
     return {
       message: "User created successfully",
@@ -48,33 +48,21 @@ export class AuthService {
   }
 
   async login(data: LoginDto) {
-
     const user = await prisma.user.findUnique({
       where: {
         email: data.email,
       },
     });
 
-
     if (!user) {
-      throw new createHttpError.Unauthorized(
-        "Invalid email or password"
-      );
+      throw new createHttpError.Unauthorized("Invalid email or password");
     }
 
-
-    const isMatch = await bcrypt.compare(
-      data.password,
-      user.password
-    );
-
+    const isMatch = await bcrypt.compare(data.password, user.password);
 
     if (!isMatch) {
-      throw new createHttpError.Unauthorized(
-        "Invalid email or password"
-      );
+      throw new createHttpError.Unauthorized("Invalid email or password");
     }
-
 
     const payload = {
       id: user.id,
@@ -82,18 +70,9 @@ export class AuthService {
       role: user.role,
     };
 
+    const accessToken = this.tokenService.generateAccessToken(payload);
 
-    const accessToken =
-      this.tokenService.generateAccessToken(
-        payload
-      );
-
-
-    const refreshToken =
-      this.tokenService.generateRefreshToken(
-        payload
-      );
-
+    const refreshToken = this.tokenService.generateRefreshToken(payload);
 
     const updatedUser = await prisma.user.update({
       where: {
@@ -104,9 +83,7 @@ export class AuthService {
       },
     });
 
-
     const { password, ...userWithoutPassword } = updatedUser;
-
 
     return {
       message: "Login successful",
@@ -117,32 +94,17 @@ export class AuthService {
   }
 
   async refreshToken(refreshToken: string) {
-
     if (!refreshToken) {
-      throw new createHttpError.Unauthorized(
-        "Refresh token required"
-      );
+      throw new createHttpError.Unauthorized("Refresh token required");
     }
-
 
     let decoded: any;
 
-
     try {
-
-      decoded = jwt.verify(
-        refreshToken,
-        process.env.JWT_REFRESH_SECRET!
-      );
-
-    } catch(error) {
-
-      throw new createHttpError.Unauthorized(
-        "Invalid refresh token"
-      );
-
+      decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!);
+    } catch (error) {
+      throw new createHttpError.Unauthorized("Invalid refresh token");
     }
-
 
     const user = await prisma.user.findUnique({
       where: {
@@ -150,35 +112,25 @@ export class AuthService {
       },
     });
 
-
     if (!user) {
-      throw new createHttpError.Unauthorized(
-        "User not found"
-      );
+      throw new createHttpError.Unauthorized("User not found");
     }
-
 
     if (user.refreshToken !== refreshToken) {
-      throw new createHttpError.Unauthorized(
-        "Refresh token mismatch"
-      );
+      throw new createHttpError.Unauthorized("Refresh token mismatch");
     }
 
-
-    const newAccessToken =
-      this.tokenService.generateAccessToken({
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      });
-
+    const newAccessToken = this.tokenService.generateAccessToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
 
     return {
       message: "Access token refreshed",
       accessToken: newAccessToken,
     };
-
-  }  
+  }
 
   async forgotPassword(email: string) {
     const user = await prisma.user.findUnique({
@@ -191,13 +143,9 @@ export class AuthService {
       throw new createHttpError.NotFound("User not found");
     }
 
-    const resetToken = crypto
-      .randomBytes(32)
-      .toString("hex");
+    const resetToken = crypto.randomBytes(32).toString("hex");
 
-    const resetTokenExpiry = new Date(
-      Date.now() + 15 * 60 * 1000
-    );
+    const resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000);
 
     await prisma.user.update({
       where: {
@@ -209,20 +157,14 @@ export class AuthService {
       },
     });
 
-    await this.emailService.sendResetPasswordEmail(
-      user.email,
-      resetToken
-    );
+    await this.emailService.sendResetPasswordEmail(user.email, resetToken);
 
     return {
       message: "Password reset email sent successfully",
     };
   }
 
-  async resetPassword(
-    token: string,
-    password: string
-  ) {
+  async resetPassword(token: string, password: string) {
     const user = await prisma.user.findFirst({
       where: {
         resetToken: token,
@@ -230,24 +172,14 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new createHttpError.BadRequest(
-        "Invalid reset token"
-      );
+      throw new createHttpError.BadRequest("Invalid reset token");
     }
 
-    if (
-      !user.resetTokenExpiry ||
-      user.resetTokenExpiry < new Date()
-    ) {
-      throw new createHttpError.BadRequest(
-        "Reset token has expired"
-      );
+    if (!user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+      throw new createHttpError.BadRequest("Reset token has expired");
     }
 
-    const hashedPassword = await bcrypt.hash(
-      password,
-      10
-    );
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     await prisma.user.update({
       where: {

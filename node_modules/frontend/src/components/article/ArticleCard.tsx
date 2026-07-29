@@ -12,10 +12,7 @@ type Props = {
 function ArticleCard({ article }: Props) {
   return (
     <div className="rounded-xl border bg-white p-5 shadow">
-
-      <h2 className="text-xl font-bold">
-        {article.title}
-      </h2>
+      <h2 className="text-xl font-bold">{article.title}</h2>
 
       {article.image && (
         <img
@@ -25,10 +22,7 @@ function ArticleCard({ article }: Props) {
         />
       )}
 
-      <p className="mt-3 text-gray-700">
-        {article.content}
-      </p>
-
+      <p className="mt-3 text-gray-700">{article.content}</p>
     </div>
   );
 }

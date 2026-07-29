@@ -1,8 +1,5 @@
-import {
-  createContext,
-  useContext,
-  useState,
-} from "react";
+import { socket } from "../socket/socket";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import type { ReactNode } from "react";
 
@@ -17,80 +14,68 @@ type User = {
 type AuthContextType = {
   user: User | null;
   token: string | null;
-  login: (
-    user: User,
-    token: string,
-    refreshToken: string
-  ) => void;
+  login: (user: User, token: string, refreshToken: string) => void;
   logout: () => void;
 };
 
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
-);
-
-
-export function AuthProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
-
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem("user");
 
-    return storedUser
-      ? JSON.parse(storedUser)
-      : null;
+    return storedUser ? JSON.parse(storedUser) : null;
   });
-
 
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem("token");
   });
 
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
 
-  const login = (
-    user: User,
-    token: string,
-    refreshToken: string
-  ) => {
+    const handleConnect = () => {
+      console.log("Frontend socket connected:", socket.id);
 
+      socket.emit("register", user.id);
+    };
+
+    socket.on("connect", handleConnect);
+
+    if (!socket.connected) {
+      socket.connect();
+    } else {
+      socket.emit("register", user.id);
+    }
+
+    return () => {
+      socket.off("connect", handleConnect);
+    };
+  }, [user]);
+
+  const login = (user: User, token: string, refreshToken: string) => {
     setUser(user);
     setToken(token);
 
+    localStorage.setItem("user", JSON.stringify(user));
 
-    localStorage.setItem(
-      "user",
-      JSON.stringify(user)
-    );
+    localStorage.setItem("token", token);
 
-
-    localStorage.setItem(
-      "token",
-      token
-    );
-
-
-    localStorage.setItem(
-      "refreshToken",
-      refreshToken
-    );
+    localStorage.setItem("refreshToken", refreshToken);
   };
 
-
   const logout = () => {
+    socket.disconnect();
 
     setUser(null);
     setToken(null);
-
 
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
   };
-
 
   return (
     <AuthContext.Provider
@@ -106,18 +91,10 @@ export function AuthProvider({
   );
 }
 
-
 export function useAuth() {
-
   const context = useContext(AuthContext);
-
-
   if (!context) {
-    throw new Error(
-      "useAuth must be used inside AuthProvider"
-    );
+    throw new Error("useAuth must be used inside AuthProvider");
   }
-
-
   return context;
 }

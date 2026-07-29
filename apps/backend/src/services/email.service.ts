@@ -5,10 +5,7 @@ const brevo = new BrevoClient({
 });
 
 export class EmailService {
-  async sendResetPasswordEmail(
-    email: string,
-    token: string
-  ) {
+  async sendResetPasswordEmail(email: string, token: string) {
     await brevo.transactionalEmails.sendTransacEmail({
       sender: {
         name: process.env.BREVO_SENDER_NAME!,

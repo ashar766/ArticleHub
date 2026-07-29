@@ -16,6 +16,8 @@ import PendingArticles from "../pages/admin/PendingArticles";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminRoute from "./AdminRoute";
 
+import Notifications from "../pages/user/Noifications";
+
 function AppRoutes() {
   return (
     <Routes>
@@ -61,6 +63,8 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      <Route path="/notifications" element={<Notifications />} />
 
       {/* Admin Routes */}
       <Route

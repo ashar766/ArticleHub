@@ -33,30 +33,16 @@ function CreateArticle() {
 
       const formData = new FormData();
 
-      formData.append(
-        "title",
-        data.title
-      );
+      formData.append("title", data.title);
 
-      formData.append(
-        "content",
-        data.content
-      );
-
+      formData.append("content", data.content);
 
       if (data.image?.[0]) {
-        formData.append(
-          "image",
-          data.image[0]
-        );
+        formData.append("image", data.image[0]);
       }
 
+      const response = await createArticle(formData, token);
 
-      const response = await createArticle(
-        formData,
-        token
-      );
-      
       alert(response.message);
 
       navigate("/");
@@ -69,14 +55,9 @@ function CreateArticle() {
   return (
     <MainLayout>
       <div className="mx-auto max-w-3xl rounded-lg bg-white p-6 shadow">
-        <h1 className="mb-6 text-3xl font-bold">
-          Create Article
-        </h1>
+        <h1 className="mb-6 text-3xl font-bold">Create Article</h1>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-4"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Input
             label="Title"
             {...register("title", {
@@ -86,9 +67,7 @@ function CreateArticle() {
           />
 
           <div>
-            <label className="mb-2 block font-medium">
-              Content
-            </label>
+            <label className="mb-2 block font-medium">Content</label>
 
             <textarea
               rows={8}
@@ -106,9 +85,7 @@ function CreateArticle() {
           </div>
 
           <div>
-            <label className="mb-2 block font-medium">
-              Image
-            </label>
+            <label className="mb-2 block font-medium">Image</label>
 
             <input
               type="file"
@@ -118,13 +95,8 @@ function CreateArticle() {
             />
           </div>
 
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-          >
-            {isSubmitting
-              ? "Publishing..."
-              : "Publish Article"}
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Publishing..." : "Publish Article"}
           </Button>
         </form>
       </div>

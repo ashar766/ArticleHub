@@ -24,24 +24,19 @@ function Login() {
     formState: { errors, isSubmitting },
   } = useForm<LoginForm>({
     resolver: zodResolver(LoginSchema),
-  });
+  }); //So this whole block is just saying: Set up the login form so it can check the user’s email/password and handle submission.
 
   const onSubmit = async (data: LoginForm) => {
     try {
       const response = await login(data);
 
-      saveLogin(
-        response.user,
-        response.accessToken,
-        response.refreshToken
-      );
+      saveLogin(response.user, response.accessToken, response.refreshToken);
 
       if (response.user.role === "ADMIN") {
         navigate("/admin");
       } else {
         navigate("/");
       }
-
     } catch (error) {
       console.error(error);
       alert("Invalid email or password");
@@ -50,10 +45,7 @@ function Login() {
 
   return (
     <AuthLayout title="Login">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-4"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Input
           label="Email"
           type="email"
@@ -70,27 +62,16 @@ function Login() {
           error={errors.password?.message}
         />
 
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-        >
-          {isSubmitting
-            ? "Logging in..."
-            : "Login"}
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Logging in..." : "Login"}
         </Button>
 
         <div className="flex justify-between text-sm">
-          <Link
-            to="/forgot-password"
-            className="text-blue-600 hover:underline"
-          >
+          <Link to="/forgot-password" className="text-blue-600 hover:underline">
             Forgot Password?
           </Link>
 
-          <Link
-            to="/signup"
-            className="text-blue-600 hover:underline"
-          >
+          <Link to="/signup" className="text-blue-600 hover:underline">
             Create Account
           </Link>
         </div>
