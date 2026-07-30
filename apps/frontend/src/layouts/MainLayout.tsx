@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import { getNotifications } from "../services/notification.services";
+import { Role } from "@articlehub/shared";
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
@@ -49,7 +50,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 
           <Link to="/my-articles">My Articles</Link>
 
-          {user?.role === "ADMIN" && (
+          {user?.role === Role.ADMIN && (
             <>
               <Link to="/admin">Admin Dashboard</Link>
 
@@ -57,7 +58,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             </>
           )}
 
-          {user?.role === "USER" && (
+          {user?.role === Role.USER && (
             <Link
               to="/notifications"
               className="relative rounded bg-gray-700 px-4 py-2 text-white"

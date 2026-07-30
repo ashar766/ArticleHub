@@ -8,6 +8,7 @@ import {
   ResetPasswordSchema,
 } from "@articlehub/shared";
 import { authenticate } from "../middlewares/auth.middleware.js";
+import { asyncHandler } from "../middlewares/async-handler.middleware.js";
 
 const router = Router();
 const authController = new AuthController();
@@ -15,34 +16,38 @@ const authController = new AuthController();
 router.post(
   "/signup",
   validate(SignupSchema),
-  authController.signup.bind(authController),
+  asyncHandler(authController.signup.bind(authController)),
 );
 
 router.post(
   "/login",
   validate(LoginSchema),
-  authController.login.bind(authController),
+  asyncHandler(authController.login.bind(authController)),
 );
 
-router.post("/refresh-token", authController.refreshToken.bind(authController));
+router.post(
+  "/refresh-token",
+  asyncHandler(authController.refreshToken.bind(authController)),
+);
 
 router.get(
   "/profile",
   authenticate,
-  authController.profile.bind(authController),
+  asyncHandler(authController.profile.bind(authController)),
 );
 
 router.post(
   "/forgot-password",
   validate(ForgotPasswordSchema),
-  authController.forgotPassword.bind(authController),
+  asyncHandler(authController.forgotPassword.bind(authController)),
 );
 
 router.post(
   "/reset-password",
   validate(ResetPasswordSchema),
-  authController.resetPassword.bind(authController),
+  asyncHandler(authController.resetPassword.bind(authController)),
 );
 
 console.log("✅ Auth routes loaded");
+
 export default router;

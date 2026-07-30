@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
 import MainLayout from "../../layouts/MainLayout";
-
 import { getMyArticles, deleteArticle } from "../../services/article.services";
+import { ArticleStatus } from "@articlehub/shared";
 
 type Article = {
   id: string;
   title: string;
   content: string;
-  status: "PENDING" | "APPROVED" | "REJECTED";
+  status:
+    | ArticleStatus.PENDING
+    | ArticleStatus.APPROVED
+    | ArticleStatus.REJECTED;
   image?: string;
 };
 
@@ -69,18 +71,18 @@ function MyArticles() {
 
                 <span
                   className={`rounded px-3 py-1 text-sm text-white ${
-                    article.status === "APPROVED"
+                    article.status === ArticleStatus.APPROVED
                       ? "bg-green-500"
-                      : article.status === "PENDING"
+                      : article.status === ArticleStatus.PENDING
                         ? "bg-yellow-500"
                         : "bg-red-500"
                   }`}
                 >
-                  {article.status === "APPROVED"
-                    ? "Approved"
-                    : article.status === "PENDING"
-                      ? "Pending"
-                      : "Rejected"}
+                  {article.status === ArticleStatus.APPROVED
+                    ? ArticleStatus.APPROVED
+                    : article.status === ArticleStatus.PENDING
+                      ? ArticleStatus.PENDING
+                      : ArticleStatus.REJECTED}
                 </span>
               </div>
 

@@ -1,8 +1,10 @@
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { prisma } from "../config/prisma.js";
 import { TokenService } from "./token.services.js";
 import { EmailService } from "./email.service.js";
 import crypto from "node:crypto";
+import { Message } from "@articlehub/shared";
 import createHttpError from "http-errors";
 export class AuthService {
     tokenService = new TokenService();
@@ -15,7 +17,7 @@ export class AuthService {
             },
         });
         if (existingUser) {
-            throw new createHttpError.Conflict("User already exists");
+            throw new createHttpError.Conflict(Message.USER_ALREADY_EXISTS);
         }
         const hashedPassword = await bcrypt.hash(data.password, 10);
         const user = await prisma.user.create({
@@ -26,9 +28,9 @@ export class AuthService {
                 password: hashedPassword,
             },
         });
-        const { password, ...userWithoutPassword } = user;
+        const { password, ...userWithoutPassword } = user; //when output dto will be created no need for this
         return {
-            message: "User created successfully",
+            message: Message.USER_CREATED_SUCCESSFULLY,
             user: userWithoutPassword,
         };
     }
@@ -39,22 +41,65 @@ export class AuthService {
             },
         });
         if (!user) {
-            throw new createHttpError.Unauthorized("Invalid email or password");
+            throw new createHttpError.Unauthorized(Message.INVALID_CREDENTIALS);
         }
         const isMatch = await bcrypt.compare(data.password, user.password);
         if (!isMatch) {
-            throw new createHttpError.Unauthorized("Invalid email or password");
+            throw new createHttpError.Unauthorized(Message.INVALID_CREDENTIALS);
         }
-        const accessToken = this.tokenService.generateAccessToken({
+        const payload = {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+        };
+        const accessToken = this.tokenService.generateAccessToken(payload);
+        const refreshToken = this.tokenService.generateRefreshToken(payload);
+        const updatedUser = await prisma.user.update({
+            where: {
+                id: user.id,
+            },
+            data: {
+                refreshToken,
+            },
+        });
+        const { password, ...userWithoutPassword } = updatedUser;
+        return {
+            message: Message.LOGIN_SUCCESSFUL,
+            accessToken,
+            refreshToken,
+            user: userWithoutPassword,
+        };
+    }
+    async refreshToken(refreshToken) {
+        if (!refreshToken) {
+            throw new createHttpError.Unauthorized(Message.REFRESH_TOKEN_REQUIRED);
+        }
+        let decoded;
+        try {
+            decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+        }
+        catch (error) {
+            throw new createHttpError.Unauthorized(Message.INVALID_REFRESH_TOKEN);
+        }
+        const user = await prisma.user.findUnique({
+            where: {
+                id: decoded.id,
+            },
+        });
+        if (!user) {
+            throw new createHttpError.Unauthorized(Message.USER_NOT_FOUND);
+        }
+        if (user.refreshToken !== refreshToken) {
+            throw new createHttpError.Unauthorized(Message.REFRESH_TOKEN_MISMATCH);
+        }
+        const newAccessToken = this.tokenService.generateAccessToken({
             id: user.id,
             email: user.email,
             role: user.role,
         });
-        const { password, ...userWithoutPassword } = user;
         return {
-            message: "Login successful",
-            accessToken,
-            user: userWithoutPassword,
+            message: Message.ACCESS_TOKEN_REFRESHED,
+            accessToken: newAccessToken,
         };
     }
     async forgotPassword(email) {
@@ -64,11 +109,9 @@ export class AuthService {
             },
         });
         if (!user) {
-            throw new createHttpError.NotFound("User not found");
+            throw new createHttpError.NotFound(Message.USER_NOT_FOUND);
         }
-        const resetToken = crypto
-            .randomBytes(32)
-            .toString("hex");
+        const resetToken = crypto.randomBytes(32).toString("hex");
         const resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000);
         await prisma.user.update({
             where: {
@@ -81,7 +124,7 @@ export class AuthService {
         });
         await this.emailService.sendResetPasswordEmail(user.email, resetToken);
         return {
-            message: "Password reset email sent successfully",
+            message: Message.PASSWORD_RESET_EMAIL_SENT_SUCCESSFULLY,
         };
     }
     async resetPassword(token, password) {
@@ -91,11 +134,10 @@ export class AuthService {
             },
         });
         if (!user) {
-            throw new createHttpError.BadRequest("Invalid reset token");
+            throw new createHttpError.BadRequest(Message.INVALID_RESET_TOKEN);
         }
-        if (!user.resetTokenExpiry ||
-            user.resetTokenExpiry < new Date()) {
-            throw new createHttpError.BadRequest("Reset token has expired");
+        if (!user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+            throw new createHttpError.BadRequest(Message.RESET_TOKEN_EXPIRED);
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         await prisma.user.update({
@@ -109,7 +151,7 @@ export class AuthService {
             },
         });
         return {
-            message: "Password reset successfully",
+            message: Message.PASSWORD_RESET_SUCCESSFULLY,
         };
     }
 }

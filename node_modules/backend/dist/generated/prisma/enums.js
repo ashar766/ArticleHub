@@ -11,3 +11,8 @@ export const Role = {
     USER: 'USER',
     ADMIN: 'ADMIN'
 };
+export const ArticleStatus = {
+    PENDING: 'PENDING',
+    APPROVED: 'APPROVED',
+    REJECTED: 'REJECTED'
+};

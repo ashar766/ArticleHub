@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { HttpStatus, Message } from "@articlehub/shared";
 
 export const authenticate = (
   req: Request,
@@ -9,13 +10,17 @@ export const authenticate = (
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: Message.UNAUTHORIZED,
+    });
   }
 
   const token = authHeader.split(" ")[1];
 
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: Message.UNAUTHORIZED,
+    });
   }
 
   try {
@@ -24,9 +29,13 @@ export const authenticate = (
       email: string;
       role: string;
     };
+
     req.user = decoded;
+
     next();
   } catch {
-    return res.status(401).json({ message: "Invalid token" });
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      message: Message.INVALID_TOKEN,
+    });
   }
 };

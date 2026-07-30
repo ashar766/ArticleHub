@@ -1,5 +1,6 @@
 import { prisma } from "../config/prisma.js";
 import createHttpError from "http-errors";
+import { Message } from "@articlehub/shared";
 
 export class NotificationService {
   async getMyNotifications(userId: string) {
@@ -14,7 +15,7 @@ export class NotificationService {
     });
 
     return {
-      message: "Notifications fetched successfully",
+      message: Message.NOTIFICATIONS_FETCHED_SUCCESSFULLY,
       notifications,
     };
   }
@@ -27,13 +28,11 @@ export class NotificationService {
     });
 
     if (!notification) {
-      throw new createHttpError.NotFound("Notification not found");
+      throw new createHttpError.NotFound(Message.NOTIFICATION_NOT_FOUND);
     }
 
     if (notification.userId !== userId) {
-      throw new createHttpError.Forbidden(
-        "You are not allowed to access this notification",
-      );
+      throw new createHttpError.Forbidden(Message.NOTIFICATION_NOT_FOUND);
     }
 
     const updatedNotification = await prisma.notification.update({
@@ -46,7 +45,7 @@ export class NotificationService {
     });
 
     return {
-      message: "Notification marked as read",
+      message: Message.NOTIFICATION_MARKED_AS_READ,
       notification: updatedNotification,
     };
   }

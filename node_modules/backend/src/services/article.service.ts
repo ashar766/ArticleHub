@@ -1,7 +1,12 @@
 import { sendNotification } from "../socket/socket.js";
 import { prisma } from "../config/prisma.js";
 import createHttpError from "http-errors";
-import { CreateArticleSchema } from "@articlehub/shared";
+import {
+  CreateArticleSchema,
+  Message,
+  Role,
+  ArticleStatus,
+} from "@articlehub/shared";
 import { z } from "zod";
 
 type CreateArticleDto = z.infer<typeof CreateArticleSchema>;
@@ -15,12 +20,13 @@ export class ArticleService {
         image: data.image,
         authorId: userId,
 
-        status: role === "ADMIN" ? "APPROVED" : "PENDING",
+        status:
+          role === Role.ADMIN ? ArticleStatus.APPROVED : ArticleStatus.PENDING,
       },
     });
 
     return {
-      message: "Article created successfully",
+      message: Message.ARTICLE_CREATED_SUCCESSFULLY,
 
       article,
     };
@@ -29,12 +35,12 @@ export class ArticleService {
   async getAll() {
     const articles = await prisma.article.findMany({
       where: {
-        status: "APPROVED", //use enum istead
+        status: ArticleStatus.APPROVED, //use enum istead
       },
     });
 
     return {
-      message: "Articles fetched successfully", //cpaital and underscore
+      message: Message.ARTICLES_FETCHED_SUCCESSFULLY,
 
       articles,
     };
@@ -48,11 +54,11 @@ export class ArticleService {
     });
 
     if (!article) {
-      throw new createHttpError.NotFound("Article not found");
+      throw new createHttpError.NotFound(Message.ARTICLE_NOT_FOUND);
     }
 
     return {
-      message: "Article fetched successfully",
+      message: Message.ARTICLE_FETCHED_SUCCESSFULLY,
 
       article,
     };
@@ -66,7 +72,7 @@ export class ArticleService {
     });
 
     return {
-      message: "My articles fetched successfully",
+      message: Message.MY_ARTICLES_FETCHED_SUCCESSFULLY,
 
       articles,
     };
@@ -85,16 +91,14 @@ export class ArticleService {
     });
 
     if (!article) {
-      throw new createHttpError.NotFound("Article not found");
+      throw new createHttpError.NotFound(Message.ARTICLE_NOT_FOUND);
     }
 
     // User can update only own article
     // Admin can update any article
 
-    if (article.authorId !== userId && role !== "ADMIN") {
-      throw new createHttpError.Forbidden(
-        "You are not allowed to update this article",
-      );
+    if (article.authorId !== userId && role !== Role.ADMIN) {
+      throw new createHttpError.Forbidden(Message.FORBIDDEN);
     }
 
     const updatedArticle = await prisma.article.update({
@@ -110,15 +114,15 @@ export class ArticleService {
           image: data.image,
         }),
 
-        ...(role !== "ADMIN" && {
-          status: "PENDING",
+        ...(role !== Role.ADMIN && {
+          status: ArticleStatus.PENDING,
           rejectionReason: null,
         }),
       },
     });
 
     return {
-      message: "Article updated successfully",
+      message: Message.ARTICLE_UPDATED_SUCCESSFULLY,
 
       article: updatedArticle,
     };
@@ -132,13 +136,11 @@ export class ArticleService {
     });
 
     if (!article) {
-      throw new createHttpError.NotFound("Article not found");
+      throw new createHttpError.NotFound(Message.ARTICLE_NOT_FOUND);
     }
 
-    if (article.authorId !== userId && role !== "ADMIN") {
-      throw new createHttpError.Forbidden(
-        "You are not allowed to delete this article",
-      );
+    if (article.authorId !== userId && role !== Role.ADMIN) {
+      throw new createHttpError.Forbidden(Message.FORBIDDEN);
     }
 
     await prisma.article.delete({
@@ -148,14 +150,14 @@ export class ArticleService {
     });
 
     return {
-      message: "Article deleted successfully",
+      message: Message.ARTICLE_DELETED_SUCCESSFULLY,
     };
   }
 
   async getPendingArticles() {
     const articles = await prisma.article.findMany({
       where: {
-        status: "PENDING",
+        status: ArticleStatus.PENDING,
       },
 
       include: {
@@ -164,7 +166,7 @@ export class ArticleService {
     });
 
     return {
-      message: "Pending articles fetched successfully",
+      message: Message.ARTICLES_FETCHED_SUCCESSFULLY,
 
       articles,
     };
@@ -178,7 +180,7 @@ export class ArticleService {
     });
 
     if (!article) {
-      throw new createHttpError.NotFound("Article not found");
+      throw new createHttpError.NotFound(Message.ARTICLE_NOT_FOUND);
     }
 
     const approvedArticle = await prisma.article.update({
@@ -187,13 +189,13 @@ export class ArticleService {
       },
 
       data: {
-        status: "APPROVED",
+        status: ArticleStatus.APPROVED,
         rejectionReason: null,
       },
     });
 
     return {
-      message: "Article approved successfully",
+      message: Message.ARTICLE_APPROVED_SUCCESSFULLY,
 
       article: approvedArticle,
     };
@@ -207,7 +209,7 @@ export class ArticleService {
     });
 
     if (!article) {
-      throw new createHttpError.NotFound("Article not found");
+      throw new createHttpError.NotFound(Message.ARTICLE_NOT_FOUND);
     }
 
     await prisma.article.update({
@@ -215,7 +217,7 @@ export class ArticleService {
         id,
       },
       data: {
-        status: "REJECTED",
+        status: ArticleStatus.REJECTED,
         rejectionReason: reason,
       },
     });
@@ -231,7 +233,7 @@ export class ArticleService {
     sendNotification(article.authorId, notification);
 
     return {
-      message: "Article rejected successfully",
+      message: Message.ARTICLE_REJECTED_SUCCESSFULLY,
     };
   }
 }

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ArticleService } from "../services/article.service.js";
+import { HttpStatus, Message } from "@articlehub/shared";
 
 export class ArticleController {
   private articleService = new ArticleService();
@@ -17,7 +18,7 @@ export class ArticleController {
       req.user!.role,
     );
 
-    return res.status(201).json(result);
+    return res.status(HttpStatus.CREATED).json(result);
   }
 
   async getAll(req: Request, res: Response) {
@@ -81,8 +82,8 @@ export class ArticleController {
     const { reason } = req.body;
 
     if (!reason) {
-      return res.status(400).json({
-        message: "Rejection reason is required",
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: Message.REJECTION_REASON_REQUIRED,
       });
     }
 

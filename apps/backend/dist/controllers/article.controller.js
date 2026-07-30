@@ -1,9 +1,14 @@
 import { ArticleService } from "../services/article.service.js";
+import { HttpStatus, Message } from "@articlehub/shared";
 export class ArticleController {
     articleService = new ArticleService();
     async create(req, res) {
-        const result = await this.articleService.create(req.body, req.user.id);
-        return res.status(201).json(result);
+        const articleData = {
+            ...req.body,
+            image: req.file ? `/uploads/${req.file.filename}` : undefined,
+        };
+        const result = await this.articleService.create(articleData, req.user.id, req.user.role);
+        return res.status(HttpStatus.CREATED).json(result);
     }
     async getAll(req, res) {
         const result = await this.articleService.getAll();
@@ -18,11 +23,15 @@ export class ArticleController {
         return res.json(result);
     }
     async update(req, res) {
-        const result = await this.articleService.update(req.params.id, req.user.id, req.body);
+        const articleData = {
+            ...req.body,
+            image: req.file ? `/uploads/${req.file.filename}` : undefined,
+        };
+        const result = await this.articleService.update(req.params.id, req.user.id, req.user.role, articleData);
         return res.json(result);
     }
     async delete(req, res) {
-        const result = await this.articleService.delete(req.params.id, req.user.id);
+        const result = await this.articleService.delete(req.params.id, req.user.id, req.user.role);
         return res.json(result);
     }
     async getPendingArticles(req, res) {
@@ -31,6 +40,16 @@ export class ArticleController {
     }
     async approve(req, res) {
         const result = await this.articleService.approve(req.params.id);
+        return res.json(result);
+    }
+    async reject(req, res) {
+        const { reason } = req.body;
+        if (!reason) {
+            return res.status(HttpStatus.BAD_REQUEST).json({
+                message: Message.REJECTION_REASON_REQUIRED,
+            });
+        }
+        const result = await this.articleService.reject(req.params.id, reason);
         return res.json(result);
     }
 }

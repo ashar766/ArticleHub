@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { Role } from "@articlehub/shared";
 
 import type { ReactNode } from "react";
 
@@ -14,7 +15,7 @@ function AdminRoute({ children }: Props) {
     return <Navigate to="/login" replace />;
   }
 
-  if (user.role !== "ADMIN") {
+  if (user.role !== Role.ADMIN) {
     return <Navigate to="/" replace />;
   }
 

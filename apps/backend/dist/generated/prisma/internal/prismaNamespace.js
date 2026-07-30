@@ -68,7 +68,8 @@ export const JsonNull = runtime.JsonNull;
 export const AnyNull = runtime.AnyNull;
 export const ModelName = {
     User: 'User',
-    Article: 'Article'
+    Article: 'Article',
+    Notification: 'Notification'
 };
 /**
  * Enums
@@ -88,6 +89,7 @@ export const UserScalarFieldEnum = {
     role: 'role',
     resetToken: 'resetToken',
     resetTokenExpiry: 'resetTokenExpiry',
+    refreshToken: 'refreshToken',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };
@@ -96,10 +98,19 @@ export const ArticleScalarFieldEnum = {
     title: 'title',
     content: 'content',
     image: 'image',
-    approved: 'approved',
+    status: 'status',
+    rejectionReason: 'rejectionReason',
     authorId: 'authorId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
+};
+export const NotificationScalarFieldEnum = {
+    id: 'id',
+    title: 'title',
+    message: 'message',
+    isRead: 'isRead',
+    userId: 'userId',
+    createdAt: 'createdAt'
 };
 export const SortOrder = {
     asc: 'asc',

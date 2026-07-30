@@ -1,8 +1,9 @@
+import { HttpStatus, Message } from "@articlehub/shared";
 export class HealthController {
     getHealth(req, res) {
-        res.status(200).json({
+        res.status(HttpStatus.OK).json({
             success: true,
-            message: "ArticleHub API is running",
+            message: Message.API_IS_RUNNING,
         });
     }
 }

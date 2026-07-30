@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema } from "@articlehub/shared";
+import { LoginSchema, Role } from "@articlehub/shared";
 import type { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -32,7 +32,7 @@ function Login() {
 
       saveLogin(response.user, response.accessToken, response.refreshToken);
 
-      if (response.user.role === "ADMIN") {
+      if (response.user.role === Role.ADMIN) {
         navigate("/admin");
       } else {
         navigate("/");

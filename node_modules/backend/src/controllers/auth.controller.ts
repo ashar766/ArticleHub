@@ -1,6 +1,7 @@
 console.log("📦 AuthController file loaded");
 import { Request, Response } from "express";
 import { AuthService } from "../services/auth.services.js";
+import { HttpStatus } from "@articlehub/shared";
 
 export class AuthController {
   private authService = new AuthService();
@@ -10,7 +11,7 @@ export class AuthController {
 
     const result = await this.authService.signup(req.body);
 
-    return res.status(201).json(result);
+    return res.status(HttpStatus.CREATED).json(result);
   }
 
   async login(req: Request, res: Response) {

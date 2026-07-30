@@ -1,43 +1,45 @@
+import { sendNotification } from "../socket/socket.js";
 import { prisma } from "../config/prisma.js";
 import createHttpError from "http-errors";
+import { Message, Role, ArticleStatus, } from "@articlehub/shared";
 export class ArticleService {
-    async create(data, userId) {
+    async create(data, userId, role) {
         const article = await prisma.article.create({
             data: {
                 title: data.title,
                 content: data.content,
                 image: data.image,
                 authorId: userId,
+                status: role === Role.ADMIN ? ArticleStatus.APPROVED : ArticleStatus.PENDING,
             },
         });
         return {
-            message: "Article created successfully",
+            message: Message.ARTICLE_CREATED_SUCCESSFULLY,
             article,
         };
     }
     async getAll() {
         const articles = await prisma.article.findMany({
             where: {
-                approved: true,
+                status: ArticleStatus.APPROVED, //use enum istead
             },
         });
         return {
-            message: "Articles fetched successfully",
+            message: Message.ARTICLES_FETCHED_SUCCESSFULLY,
             articles,
         };
     }
     async getById(id) {
-        const article = await prisma.article.findFirst({
+        const article = await prisma.article.findUnique({
             where: {
                 id,
-                approved: true,
             },
         });
         if (!article) {
-            throw new createHttpError.NotFound("Article not found");
+            throw new createHttpError.NotFound(Message.ARTICLE_NOT_FOUND);
         }
         return {
-            message: "Article fetched successfully",
+            message: Message.ARTICLE_FETCHED_SUCCESSFULLY,
             article,
         };
     }
@@ -48,21 +50,23 @@ export class ArticleService {
             },
         });
         return {
-            message: "My articles fetched successfully",
+            message: Message.MY_ARTICLES_FETCHED_SUCCESSFULLY,
             articles,
         };
     }
-    async update(id, userId, data) {
+    async update(id, userId, role, data) {
         const article = await prisma.article.findUnique({
             where: {
                 id,
             },
         });
         if (!article) {
-            throw new createHttpError.NotFound("Article not found");
+            throw new createHttpError.NotFound(Message.ARTICLE_NOT_FOUND);
         }
-        if (article.authorId !== userId) {
-            throw new createHttpError.Forbidden("You are not allowed to update this article");
+        // User can update only own article
+        // Admin can update any article
+        if (article.authorId !== userId && role !== Role.ADMIN) {
+            throw new createHttpError.Forbidden(Message.FORBIDDEN);
         }
         const updatedArticle = await prisma.article.update({
             where: {
@@ -71,25 +75,31 @@ export class ArticleService {
             data: {
                 title: data.title,
                 content: data.content,
-                image: data.image,
+                ...(data.image && {
+                    image: data.image,
+                }),
+                ...(role !== Role.ADMIN && {
+                    status: ArticleStatus.PENDING,
+                    rejectionReason: null,
+                }),
             },
         });
         return {
-            message: "Article updated successfully",
+            message: Message.ARTICLE_UPDATED_SUCCESSFULLY,
             article: updatedArticle,
         };
     }
-    async delete(id, userId) {
+    async delete(id, userId, role) {
         const article = await prisma.article.findUnique({
             where: {
                 id,
             },
         });
         if (!article) {
-            throw new createHttpError.NotFound("Article not found");
+            throw new createHttpError.NotFound(Message.ARTICLE_NOT_FOUND);
         }
-        if (article.authorId !== userId) {
-            throw new createHttpError.Forbidden("You are not allowed to delete this article");
+        if (article.authorId !== userId && role !== Role.ADMIN) {
+            throw new createHttpError.Forbidden(Message.FORBIDDEN);
         }
         await prisma.article.delete({
             where: {
@@ -97,17 +107,20 @@ export class ArticleService {
             },
         });
         return {
-            message: "Article deleted successfully",
+            message: Message.ARTICLE_DELETED_SUCCESSFULLY,
         };
     }
     async getPendingArticles() {
         const articles = await prisma.article.findMany({
             where: {
-                approved: false,
+                status: ArticleStatus.PENDING,
+            },
+            include: {
+                author: true,
             },
         });
         return {
-            message: "Pending articles fetched successfully",
+            message: Message.ARTICLES_FETCHED_SUCCESSFULLY,
             articles,
         };
     }
@@ -118,19 +131,51 @@ export class ArticleService {
             },
         });
         if (!article) {
-            throw new createHttpError.NotFound("Article not found");
+            throw new createHttpError.NotFound(Message.ARTICLE_NOT_FOUND);
         }
         const approvedArticle = await prisma.article.update({
             where: {
                 id,
             },
             data: {
-                approved: true,
+                status: ArticleStatus.APPROVED,
+                rejectionReason: null,
             },
         });
         return {
-            message: "Article approved successfully",
+            message: Message.ARTICLE_APPROVED_SUCCESSFULLY,
             article: approvedArticle,
+        };
+    }
+    async reject(id, reason) {
+        const article = await prisma.article.findUnique({
+            where: {
+                id,
+            },
+        });
+        if (!article) {
+            throw new createHttpError.NotFound(Message.ARTICLE_NOT_FOUND);
+        }
+        await prisma.article.update({
+            where: {
+                id,
+            },
+            data: {
+                status: ArticleStatus.REJECTED,
+                rejectionReason: reason,
+            },
+        });
+        const notification = await prisma.notification.create({
+            data: {
+                userId: article.authorId,
+                title: "Article Rejected",
+                message: `Your article "${article.title}" was rejected.\nReason: ${reason}`,
+            },
+        });
+        console.log("Notification created:", notification);
+        sendNotification(article.authorId, notification);
+        return {
+            message: Message.ARTICLE_REJECTED_SUCCESSFULLY,
         };
     }
 }

@@ -1,6 +1,10 @@
 console.log("🚀 Server file loaded");
+import http from "http";
 import app from "./app.js";
+import { initSocket } from "./socket/socket.js";
 const PORT = 3000;
-app.listen(PORT, () => {
+const server = http.createServer(app);
+initSocket(server);
+server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });

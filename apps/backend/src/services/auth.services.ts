@@ -4,7 +4,7 @@ import { prisma } from "../config/prisma.js";
 import { TokenService } from "./token.services.js";
 import { EmailService } from "./email.service.js";
 import crypto from "node:crypto";
-import { SignupSchema, LoginSchema } from "@articlehub/shared";
+import { SignupSchema, LoginSchema, Message } from "@articlehub/shared";
 import { z } from "zod";
 import createHttpError from "http-errors";
 
@@ -25,7 +25,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new createHttpError.Conflict("User already exists");
+      throw new createHttpError.Conflict(Message.USER_ALREADY_EXISTS);
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -42,7 +42,7 @@ export class AuthService {
     const { password, ...userWithoutPassword } = user; //when output dto will be created no need for this
 
     return {
-      message: "User created successfully",
+      message: Message.USER_CREATED_SUCCESSFULLY,
       user: userWithoutPassword,
     };
   }
@@ -55,13 +55,13 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new createHttpError.Unauthorized("Invalid email or password");
+      throw new createHttpError.Unauthorized(Message.INVALID_CREDENTIALS);
     }
 
     const isMatch = await bcrypt.compare(data.password, user.password);
 
     if (!isMatch) {
-      throw new createHttpError.Unauthorized("Invalid email or password");
+      throw new createHttpError.Unauthorized(Message.INVALID_CREDENTIALS);
     }
 
     const payload = {
@@ -86,7 +86,7 @@ export class AuthService {
     const { password, ...userWithoutPassword } = updatedUser;
 
     return {
-      message: "Login successful",
+      message: Message.LOGIN_SUCCESSFUL,
       accessToken,
       refreshToken,
       user: userWithoutPassword,
@@ -95,7 +95,7 @@ export class AuthService {
 
   async refreshToken(refreshToken: string) {
     if (!refreshToken) {
-      throw new createHttpError.Unauthorized("Refresh token required");
+      throw new createHttpError.Unauthorized(Message.REFRESH_TOKEN_REQUIRED);
     }
 
     let decoded: any;
@@ -103,7 +103,7 @@ export class AuthService {
     try {
       decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!);
     } catch (error) {
-      throw new createHttpError.Unauthorized("Invalid refresh token");
+      throw new createHttpError.Unauthorized(Message.INVALID_REFRESH_TOKEN);
     }
 
     const user = await prisma.user.findUnique({
@@ -113,11 +113,11 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new createHttpError.Unauthorized("User not found");
+      throw new createHttpError.Unauthorized(Message.USER_NOT_FOUND);
     }
 
     if (user.refreshToken !== refreshToken) {
-      throw new createHttpError.Unauthorized("Refresh token mismatch");
+      throw new createHttpError.Unauthorized(Message.REFRESH_TOKEN_MISMATCH);
     }
 
     const newAccessToken = this.tokenService.generateAccessToken({
@@ -127,7 +127,7 @@ export class AuthService {
     });
 
     return {
-      message: "Access token refreshed",
+      message: Message.ACCESS_TOKEN_REFRESHED,
       accessToken: newAccessToken,
     };
   }
@@ -140,7 +140,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new createHttpError.NotFound("User not found");
+      throw new createHttpError.NotFound(Message.USER_NOT_FOUND);
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
@@ -160,7 +160,7 @@ export class AuthService {
     await this.emailService.sendResetPasswordEmail(user.email, resetToken);
 
     return {
-      message: "Password reset email sent successfully",
+      message: Message.PASSWORD_RESET_EMAIL_SENT_SUCCESSFULLY,
     };
   }
 
@@ -172,11 +172,11 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new createHttpError.BadRequest("Invalid reset token");
+      throw new createHttpError.BadRequest(Message.INVALID_RESET_TOKEN);
     }
 
     if (!user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
-      throw new createHttpError.BadRequest("Reset token has expired");
+      throw new createHttpError.BadRequest(Message.RESET_TOKEN_EXPIRED);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -193,7 +193,7 @@ export class AuthService {
     });
 
     return {
-      message: "Password reset successfully",
+      message: Message.PASSWORD_RESET_SUCCESSFULLY,
     };
   }
 }
