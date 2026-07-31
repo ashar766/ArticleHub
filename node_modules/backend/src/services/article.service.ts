@@ -8,6 +8,7 @@ import {
   ArticleStatus,
 } from "@articlehub/shared";
 import { z } from "zod";
+import { toArticleResponseDto } from "../mappers/article.mapper.js";
 
 type CreateArticleDto = z.infer<typeof CreateArticleSchema>;
 
@@ -19,7 +20,6 @@ export class ArticleService {
         content: data.content,
         image: data.image,
         authorId: userId,
-
         status:
           role === Role.ADMIN ? ArticleStatus.APPROVED : ArticleStatus.PENDING,
       },
@@ -27,22 +27,21 @@ export class ArticleService {
 
     return {
       message: Message.ARTICLE_CREATED_SUCCESSFULLY,
-
-      article,
+      article: toArticleResponseDto(article),
     };
   }
 
   async getAll() {
+    //throw new Error("Test Error"); for testing the global error handler
     const articles = await prisma.article.findMany({
       where: {
-        status: ArticleStatus.APPROVED, //use enum istead
+        status: ArticleStatus.APPROVED,
       },
     });
 
     return {
       message: Message.ARTICLES_FETCHED_SUCCESSFULLY,
-
-      articles,
+      articles: articles.map(toArticleResponseDto),
     };
   }
 
@@ -59,8 +58,7 @@ export class ArticleService {
 
     return {
       message: Message.ARTICLE_FETCHED_SUCCESSFULLY,
-
-      article,
+      article: toArticleResponseDto(article),
     };
   }
 
@@ -73,8 +71,7 @@ export class ArticleService {
 
     return {
       message: Message.MY_ARTICLES_FETCHED_SUCCESSFULLY,
-
-      articles,
+      articles: articles.map(toArticleResponseDto),
     };
   }
 
@@ -94,9 +91,6 @@ export class ArticleService {
       throw new createHttpError.NotFound(Message.ARTICLE_NOT_FOUND);
     }
 
-    // User can update only own article
-    // Admin can update any article
-
     if (article.authorId !== userId && role !== Role.ADMIN) {
       throw new createHttpError.Forbidden(Message.FORBIDDEN);
     }
@@ -105,7 +99,6 @@ export class ArticleService {
       where: {
         id,
       },
-
       data: {
         title: data.title,
         content: data.content,
@@ -123,8 +116,7 @@ export class ArticleService {
 
     return {
       message: Message.ARTICLE_UPDATED_SUCCESSFULLY,
-
-      article: updatedArticle,
+      article: toArticleResponseDto(updatedArticle),
     };
   }
 
@@ -159,16 +151,11 @@ export class ArticleService {
       where: {
         status: ArticleStatus.PENDING,
       },
-
-      include: {
-        author: true,
-      },
     });
 
     return {
       message: Message.ARTICLES_FETCHED_SUCCESSFULLY,
-
-      articles,
+      articles: articles.map(toArticleResponseDto),
     };
   }
 
@@ -187,7 +174,6 @@ export class ArticleService {
       where: {
         id,
       },
-
       data: {
         status: ArticleStatus.APPROVED,
         rejectionReason: null,
@@ -196,8 +182,7 @@ export class ArticleService {
 
     return {
       message: Message.ARTICLE_APPROVED_SUCCESSFULLY,
-
-      article: approvedArticle,
+      article: toArticleResponseDto(approvedArticle),
     };
   }
 
@@ -229,6 +214,7 @@ export class ArticleService {
         message: `Your article "${article.title}" was rejected.\nReason: ${reason}`,
       },
     });
+
     console.log("Notification created:", notification);
     sendNotification(article.authorId, notification);
 

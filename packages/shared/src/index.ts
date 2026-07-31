@@ -5,3 +5,6 @@ export * from "./enums/article-status.enum.js";
 export * from "./enums/role.enum.js";
 export * from "./constants/http-status.constant.js";
 export * from "./constants/token.constant.js";
+export * from "./dtos/article-response.dto.js";
+export * from "./dtos/notification-response.dto.js";
+export * from "./dtos/user-response.dto.js";

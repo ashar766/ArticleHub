@@ -7,6 +7,7 @@ import crypto from "node:crypto";
 import { SignupSchema, LoginSchema, Message } from "@articlehub/shared";
 import { z } from "zod";
 import createHttpError from "http-errors";
+import { toUserResponseDto } from "../mappers/user.mapper.js";
 
 type SignupDto = z.infer<typeof SignupSchema>;
 type LoginDto = z.infer<typeof LoginSchema>;
@@ -39,11 +40,9 @@ export class AuthService {
       },
     });
 
-    const { password, ...userWithoutPassword } = user; //when output dto will be created no need for this
-
     return {
       message: Message.USER_CREATED_SUCCESSFULLY,
-      user: userWithoutPassword,
+      user: toUserResponseDto(user),
     };
   }
 
@@ -83,13 +82,11 @@ export class AuthService {
       },
     });
 
-    const { password, ...userWithoutPassword } = updatedUser;
-
     return {
       message: Message.LOGIN_SUCCESSFUL,
       accessToken,
       refreshToken,
-      user: userWithoutPassword,
+      user: toUserResponseDto(updatedUser),
     };
   }
 
