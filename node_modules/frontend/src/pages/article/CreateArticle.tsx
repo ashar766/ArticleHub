@@ -34,7 +34,6 @@ function CreateArticle() {
       const formData = new FormData();
 
       formData.append("title", data.title);
-
       formData.append("content", data.content);
 
       if (data.image?.[0]) {
@@ -54,51 +53,67 @@ function CreateArticle() {
 
   return (
     <MainLayout>
-      <div className="mx-auto max-w-3xl rounded-lg bg-white p-6 shadow">
-        <h1 className="mb-6 text-3xl font-bold">Create Article</h1>
+      <div className="mx-auto max-w-5xl py-12">
+        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-10 py-8 text-white">
+            <h1 className="text-4xl font-bold">Create New Article</h1>
+            <p className="mt-2 text-blue-100">
+              Share your ideas with the community.
+            </p>
+          </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Input
-            label="Title"
-            {...register("title", {
-              required: "Title is required",
-            })}
-            error={errors.title?.message}
-          />
-
-          <div>
-            <label className="mb-2 block font-medium">Content</label>
-
-            <textarea
-              rows={8}
-              {...register("content", {
-                required: "Content is required",
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 p-10">
+            <Input
+              label="Article Title"
+              {...register("title", {
+                required: "Title is required",
               })}
-              className="w-full rounded-lg border p-3"
+              error={errors.title?.message}
             />
 
-            {errors.content && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.content.message}
-              </p>
-            )}
-          </div>
+            <div>
+              <label className="mb-2 block text-lg font-semibold text-gray-700">
+                Content
+              </label>
 
-          <div>
-            <label className="mb-2 block font-medium">Image</label>
+              <textarea
+                rows={10}
+                {...register("content", {
+                  required: "Content is required",
+                })}
+                className="w-full rounded-xl border border-gray-300 p-4 text-gray-700 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                placeholder="Write your article here..."
+              />
 
-            <input
-              type="file"
-              accept="image/*"
-              {...register("image")}
-              className="w-full rounded-lg border p-3"
-            />
-          </div>
+              {errors.content && (
+                <p className="mt-2 text-sm text-red-500">
+                  {errors.content.message}
+                </p>
+              )}
+            </div>
 
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Publishing..." : "Publish Article"}
-          </Button>
-        </form>
+            <div>
+              <label className="mb-2 block text-lg font-semibold text-gray-700">
+                Featured Image
+              </label>
+
+              <input
+                type="file"
+                accept="image/*"
+                {...register("image")}
+                className="block w-full cursor-pointer rounded-xl border border-dashed border-gray-400 bg-gray-50 p-4 transition hover:border-blue-500 hover:bg-blue-50"
+              />
+            </div>
+
+            <div className="flex justify-end">
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Publishing..." : "Publish Article"}
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </MainLayout>
   );

@@ -47,37 +47,39 @@ function Notifications() {
 
   return (
     <MainLayout>
-      <h1 className="mb-6 text-3xl font-bold">Notifications</h1>
+      <div className="mx-auto max-w-6xl py-10">
+        <h1 className="mb-6 text-3xl font-bold">Notifications</h1>
 
-      {notifications.length === 0 ? (
-        <p>No notifications.</p>
-      ) : (
-        <div className="space-y-4">
-          {notifications.map((notification) => (
-            <div
-              key={notification.id}
-              className="relative rounded-lg bg-white p-5 shadow"
-            >
-              <button
-                onClick={() => handleRead(notification.id)}
-                className="
-              absolute
-              right-3
-              top-3
-              text-gray-500
-              hover:text-red-500
-              "
+        {notifications.length === 0 ? (
+          <p>No notifications.</p>
+        ) : (
+          <div className="space-y-4">
+            {notifications.map((notification) => (
+              <div
+                key={notification.id}
+                className="relative rounded-lg bg-white p-5 shadow"
               >
-                ✕
-              </button>
+                <button
+                  onClick={() => handleRead(notification.id)}
+                  className="
+                absolute
+                right-3
+                top-3
+                text-gray-500
+                hover:text-red-500
+                "
+                >
+                  ✕
+                </button>
 
-              <h2 className="font-bold">{notification.title}</h2>
+                <h2 className="font-bold">{notification.title}</h2>
 
-              <p>{notification.message}</p>
-            </div>
-          ))}
-        </div>
-      )}
+                <p>{notification.message}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </MainLayout>
   );
 }

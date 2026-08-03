@@ -91,4 +91,10 @@ export class ArticleController {
 
     return res.json(result);
   }
+
+  async getDashboardStats(req: Request, res: Response) {
+    const result = await this.articleService.getDashboardStats();
+
+    return res.json(result);
+  }
 }

@@ -103,3 +103,13 @@ export const getArticleById = async (id: string, token: string) => {
 
   return response.data;
 };
+
+export const getDashboardStats = async (token: string) => {
+  const response = await api.get("/articles/admin/dashboard", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};

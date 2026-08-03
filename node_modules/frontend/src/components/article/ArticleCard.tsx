@@ -11,18 +11,38 @@ type Props = {
 
 function ArticleCard({ article }: Props) {
   return (
-    <div className="rounded-xl border bg-white p-5 shadow">
-      <h2 className="text-xl font-bold">{article.title}</h2>
+    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <div className="grid grid-cols-1 md:grid-cols-2">
+        {/* Left Side */}
+        <div className="flex flex-col justify-center p-8">
+          <h2 className="mb-4 text-3xl font-bold text-gray-900">
+            {article.title}
+          </h2>
 
-      {article.image && (
-        <img
-          src={`http://localhost:3000${article.image}`}
-          alt={article.title}
-          className="mt-4 h-64 w-full rounded-lg object-cover"
-        />
-      )}
+          <p className="line-clamp-5 text-lg leading-8 text-gray-600">
+            {article.content}
+          </p>
 
-      <p className="mt-3 text-gray-700">{article.content}</p>
+          <button className="mt-6 w-fit rounded-lg bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700">
+            Read More →
+          </button>
+        </div>
+
+        {/* Right Side */}
+        <div className="h-[320px] md:h-[320px]">
+          {article.image ? (
+            <img
+              src={`http://localhost:3000${article.image}`}
+              alt={article.title}
+              className="h-full w-full object-contain"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400">
+              No Image
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

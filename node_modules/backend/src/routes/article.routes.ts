@@ -22,6 +22,13 @@ router.get(
   asyncHandler(articleController.getPendingArticles.bind(articleController)),
 );
 
+router.get(
+  "/admin/dashboard",
+  authenticate,
+  authorize(Role.ADMIN),
+  asyncHandler(articleController.getDashboardStats.bind(articleController)),
+);
+
 // User/Admin - own articles
 router.get(
   "/me",

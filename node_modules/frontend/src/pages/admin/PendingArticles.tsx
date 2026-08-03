@@ -71,42 +71,83 @@ function PendingArticles() {
 
   return (
     <MainLayout>
-      <h1 className="text-3xl font-bold">Pending Articles</h1>
+      <div className="mx-auto max-w-6xl py-10">
+        <div className="mb-10">
+          <h1 className="text-4xl font-bold text-gray-900">Pending Articles</h1>
+          <p className="mt-2 text-gray-500">
+            Review submitted articles and decide whether to approve or reject
+            them.
+          </p>
+        </div>
 
-      {articles.length === 0 && <p className="mt-4">No pending articles.</p>}
+        {articles.length === 0 ? (
+          <div className="rounded-2xl bg-white p-12 text-center shadow">
+            <h2 className="text-2xl font-semibold text-gray-700">
+              No Pending Articles
+            </h2>
 
-      <div className="mt-6 space-y-4">
-        {articles.map((article) => (
-          <div key={article.id} className="rounded-lg bg-white p-5 shadow">
-            {article.image && (
-              <img
-                src={`http://localhost:3000${article.image}`}
-                alt={article.title}
-                className="mb-4 h-48 w-full rounded-lg object-cover"
-              />
-            )}
-
-            <h2 className="text-xl font-bold">{article.title}</h2>
-
-            <p className="mt-2">{article.content}</p>
-
-            <div className="mt-4 flex gap-3">
-              <button
-                onClick={() => handleApprove(article.id)}
-                className="rounded bg-green-600 px-4 py-2 text-white"
-              >
-                Approve
-              </button>
-
-              <button
-                onClick={() => handleReject(article.id)}
-                className="rounded bg-red-600 px-4 py-2 text-white"
-              >
-                Reject
-              </button>
-            </div>
+            <p className="mt-3 text-gray-500">
+              All submitted articles have already been reviewed.
+            </p>
           </div>
-        ))}
+        ) : (
+          <div className="space-y-8">
+            {articles.map((article) => (
+              <div
+                key={article.id}
+                className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2">
+                  {/* Left Side */}
+                  <div className="flex flex-col justify-between p-8">
+                    <div>
+                      <span className="mb-4 inline-block rounded-full bg-yellow-100 px-4 py-1 text-sm font-semibold text-yellow-700">
+                        Pending Review
+                      </span>
+
+                      <h2 className="mb-4 text-3xl font-bold text-gray-900">
+                        {article.title}
+                      </h2>
+
+                      <p className="line-clamp-6 leading-8 text-gray-600">
+                        {article.content}
+                      </p>
+                    </div>
+
+                    <div className="mt-8 flex gap-4">
+                      <button
+                        onClick={() => handleApprove(article.id)}
+                        className="rounded-xl bg-green-600 px-6 py-2 font-medium text-white transition hover:bg-green-700"
+                      >
+                        ✓ Approve
+                      </button>
+
+                      <button
+                        onClick={() => handleReject(article.id)}
+                        className="rounded-xl bg-red-600 px-6 py-2 font-medium text-white transition hover:bg-red-700"
+                      >
+                        ✕ Reject
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Right Side */}
+                  <div className="flex h-[320px] items-center justify-center bg-gray-100 p-5">
+                    {article.image ? (
+                      <img
+                        src={`http://localhost:3000${article.image}`}
+                        alt={article.title}
+                        className="h-full w-full rounded-xl object-contain"
+                      />
+                    ) : (
+                      <div className="text-gray-400">No Image Available</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </MainLayout>
   );

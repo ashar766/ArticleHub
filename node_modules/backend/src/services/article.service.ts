@@ -222,4 +222,40 @@ export class ArticleService {
       message: Message.ARTICLE_REJECTED_SUCCESSFULLY,
     };
   }
+
+  async getDashboardStats() {
+    const [totalArticles, pendingArticles, approvedArticles, rejectedArticles] =
+      await Promise.all([
+        prisma.article.count(),
+
+        prisma.article.count({
+          where: {
+            status: ArticleStatus.PENDING,
+          },
+        }),
+
+        prisma.article.count({
+          where: {
+            status: ArticleStatus.APPROVED,
+          },
+        }),
+
+        prisma.article.count({
+          where: {
+            status: ArticleStatus.REJECTED,
+          },
+        }),
+      ]);
+
+    return {
+      message: Message.DASHBOARD_STATS_FETCHED_SUCCESSFULLY,
+
+      stats: {
+        totalArticles,
+        pendingArticles,
+        approvedArticles,
+        rejectedArticles,
+      },
+    };
+  }
 }

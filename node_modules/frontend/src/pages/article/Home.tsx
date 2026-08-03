@@ -32,7 +32,7 @@ function Home() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 mx-auto max-w-6xl py-10">
         <h1 className="text-3xl font-bold">Latest Articles</h1>
 
         <div className="space-y-5">
