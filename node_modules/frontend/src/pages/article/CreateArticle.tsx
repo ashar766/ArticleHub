@@ -56,9 +56,9 @@ function CreateArticle() {
       <div className="mx-auto max-w-5xl py-12">
         <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl">
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-10 py-8 text-white">
+          <div className="bg-gradient-to-r from-yellow-600 to-amber-400 px-10 py-8 text-white">
             <h1 className="text-4xl font-bold">Create New Article</h1>
-            <p className="mt-2 text-blue-100">
+            <p className="mt-2 text-yellow-100">
               Share your ideas with the community.
             </p>
           </div>

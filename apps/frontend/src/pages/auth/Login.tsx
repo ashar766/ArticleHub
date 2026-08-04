@@ -67,11 +67,14 @@ function Login() {
         </Button>
 
         <div className="flex justify-between text-sm">
-          <Link to="/forgot-password" className="text-blue-600 hover:underline">
+          <Link
+            to="/forgot-password"
+            className="text-yellow-600 hover:underline"
+          >
             Forgot Password?
           </Link>
 
-          <Link to="/signup" className="text-blue-600 hover:underline">
+          <Link to="/signup" className="text-yellow-600 hover:underline">
             Create Account
           </Link>
         </div>

@@ -23,7 +23,7 @@ function ArticleCard({ article }: Props) {
             {article.content}
           </p>
 
-          <button className="mt-6 w-fit rounded-lg bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700">
+          <button className="mt-6 w-fit rounded-lg bg-yellow-500 px-5 py-2 font-medium text-white transition hover:bg-yellow-600">
             Read More →
           </button>
         </div>

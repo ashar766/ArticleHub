@@ -64,7 +64,7 @@ function Signup() {
           {isSubmitting ? "Creating..." : "Sign Up"}
         </Button>
 
-        <Link to="/login" className="text-blue-600 hover:underline">
+        <Link to="/login" className="text-yellow-600 hover:underline">
           Already have an account? Log in
         </Link>
       </form>
