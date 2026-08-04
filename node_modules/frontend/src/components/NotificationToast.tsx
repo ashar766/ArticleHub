@@ -19,7 +19,7 @@ function NotificationToast() {
     <div
       className="
         fixed
-        top-5
+        top-20
         right-5
         z-50
         w-80
