@@ -8,7 +8,6 @@ export class ArticleController {
   async create(req: Request, res: Response) {
     const articleData = {
       ...req.body,
-
       image: req.file ? `/uploads/${req.file.filename}` : undefined,
     };
 
@@ -23,7 +22,6 @@ export class ArticleController {
 
   async getAll(req: Request, res: Response) {
     const result = await this.articleService.getAll();
-
     return res.json(result);
   }
 
@@ -35,7 +33,6 @@ export class ArticleController {
 
   async getMyArticles(req: Request, res: Response) {
     const result = await this.articleService.getMyArticles(req.user!.id);
-
     return res.json(result);
   }
 

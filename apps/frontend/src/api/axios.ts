@@ -7,7 +7,6 @@ const api = axios.create({
   },
 });
 
-
 // Add access token automatically
 api.interceptors.request.use(
   (config) => {
@@ -21,9 +20,8 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
-
 
 // Refresh token when access token expires
 api.interceptors.response.use(
@@ -32,56 +30,32 @@ api.interceptors.response.use(
   },
 
   async (error) => {
-
     const originalRequest = error.config;
 
-
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry
-    ) {
-
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-
       try {
-
-        const refreshToken =
-          localStorage.getItem("refreshToken");
-
-
+        const refreshToken = localStorage.getItem("refreshToken");
         if (!refreshToken) {
           throw error;
         }
-
 
         const response = await axios.post(
           "http://localhost:3000/api/auth/refresh-token",
           {
             refreshToken,
-          }
+          },
         );
 
+        const newAccessToken = response.data.accessToken;
 
-        const newAccessToken =
-          response.data.accessToken;
+        localStorage.setItem("token", newAccessToken);
 
-
-        localStorage.setItem(
-          "token",
-          newAccessToken
-        );
-
-
-        originalRequest.headers.Authorization =
-          `Bearer ${newAccessToken}`;
-
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
         return api(originalRequest);
-
-
-      } catch(refreshError) {
-
+      } catch (refreshError) {
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("user");
@@ -92,10 +66,8 @@ api.interceptors.response.use(
       }
     }
 
-
     return Promise.reject(error);
-  }
+  },
 );
-
 
 export default api;
