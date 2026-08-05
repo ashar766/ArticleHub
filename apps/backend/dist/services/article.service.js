@@ -2,6 +2,7 @@ import { sendNotification } from "../socket/socket.js";
 import { prisma } from "../config/prisma.js";
 import createHttpError from "http-errors";
 import { Message, Role, ArticleStatus, } from "@articlehub/shared";
+import { toArticleResponseDto } from "../mappers/article.mapper.js";
 export class ArticleService {
     async create(data, userId, role) {
         const article = await prisma.article.create({
@@ -15,18 +16,19 @@ export class ArticleService {
         });
         return {
             message: Message.ARTICLE_CREATED_SUCCESSFULLY,
-            article,
+            article: toArticleResponseDto(article),
         };
     }
     async getAll() {
+        //throw new Error("Test Error"); for testing the global error handler
         const articles = await prisma.article.findMany({
             where: {
-                status: ArticleStatus.APPROVED, //use enum istead
+                status: ArticleStatus.APPROVED,
             },
         });
         return {
             message: Message.ARTICLES_FETCHED_SUCCESSFULLY,
-            articles,
+            articles: articles.map(toArticleResponseDto),
         };
     }
     async getById(id) {
@@ -40,7 +42,7 @@ export class ArticleService {
         }
         return {
             message: Message.ARTICLE_FETCHED_SUCCESSFULLY,
-            article,
+            article: toArticleResponseDto(article),
         };
     }
     async getMyArticles(userId) {
@@ -51,7 +53,7 @@ export class ArticleService {
         });
         return {
             message: Message.MY_ARTICLES_FETCHED_SUCCESSFULLY,
-            articles,
+            articles: articles.map(toArticleResponseDto),
         };
     }
     async update(id, userId, role, data) {
@@ -63,8 +65,6 @@ export class ArticleService {
         if (!article) {
             throw new createHttpError.NotFound(Message.ARTICLE_NOT_FOUND);
         }
-        // User can update only own article
-        // Admin can update any article
         if (article.authorId !== userId && role !== Role.ADMIN) {
             throw new createHttpError.Forbidden(Message.FORBIDDEN);
         }
@@ -86,7 +86,7 @@ export class ArticleService {
         });
         return {
             message: Message.ARTICLE_UPDATED_SUCCESSFULLY,
-            article: updatedArticle,
+            article: toArticleResponseDto(updatedArticle),
         };
     }
     async delete(id, userId, role) {
@@ -115,13 +115,10 @@ export class ArticleService {
             where: {
                 status: ArticleStatus.PENDING,
             },
-            include: {
-                author: true,
-            },
         });
         return {
             message: Message.ARTICLES_FETCHED_SUCCESSFULLY,
-            articles,
+            articles: articles.map(toArticleResponseDto),
         };
     }
     async approve(id) {
@@ -144,7 +141,7 @@ export class ArticleService {
         });
         return {
             message: Message.ARTICLE_APPROVED_SUCCESSFULLY,
-            article: approvedArticle,
+            article: toArticleResponseDto(approvedArticle),
         };
     }
     async reject(id, reason) {
@@ -176,6 +173,35 @@ export class ArticleService {
         sendNotification(article.authorId, notification);
         return {
             message: Message.ARTICLE_REJECTED_SUCCESSFULLY,
+        };
+    }
+    async getDashboardStats() {
+        const [totalArticles, pendingArticles, approvedArticles, rejectedArticles] = await Promise.all([
+            prisma.article.count(),
+            prisma.article.count({
+                where: {
+                    status: ArticleStatus.PENDING,
+                },
+            }),
+            prisma.article.count({
+                where: {
+                    status: ArticleStatus.APPROVED,
+                },
+            }),
+            prisma.article.count({
+                where: {
+                    status: ArticleStatus.REJECTED,
+                },
+            }),
+        ]);
+        return {
+            message: Message.DASHBOARD_STATS_FETCHED_SUCCESSFULLY,
+            stats: {
+                totalArticles,
+                pendingArticles,
+                approvedArticles,
+                rejectedArticles,
+            },
         };
     }
 }

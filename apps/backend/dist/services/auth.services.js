@@ -6,6 +6,7 @@ import { EmailService } from "./email.service.js";
 import crypto from "node:crypto";
 import { Message } from "@articlehub/shared";
 import createHttpError from "http-errors";
+import { toUserResponseDto } from "../mappers/user.mapper.js";
 export class AuthService {
     tokenService = new TokenService();
     emailService = new EmailService();
@@ -28,10 +29,9 @@ export class AuthService {
                 password: hashedPassword,
             },
         });
-        const { password, ...userWithoutPassword } = user; //when output dto will be created no need for this
         return {
             message: Message.USER_CREATED_SUCCESSFULLY,
-            user: userWithoutPassword,
+            user: toUserResponseDto(user),
         };
     }
     async login(data) {
@@ -62,12 +62,11 @@ export class AuthService {
                 refreshToken,
             },
         });
-        const { password, ...userWithoutPassword } = updatedUser;
         return {
             message: Message.LOGIN_SUCCESSFUL,
             accessToken,
             refreshToken,
-            user: userWithoutPassword,
+            user: toUserResponseDto(updatedUser),
         };
     }
     async refreshToken(refreshToken) {

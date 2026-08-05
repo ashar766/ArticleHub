@@ -1,6 +1,7 @@
 import { prisma } from "../config/prisma.js";
 import createHttpError from "http-errors";
 import { Message } from "@articlehub/shared";
+import { toNotificationResponseDto } from "../mappers/notification.mapper.js";
 export class NotificationService {
     async getMyNotifications(userId) {
         const notifications = await prisma.notification.findMany({
@@ -14,7 +15,7 @@ export class NotificationService {
         });
         return {
             message: Message.NOTIFICATIONS_FETCHED_SUCCESSFULLY,
-            notifications,
+            notifications: notifications.map(toNotificationResponseDto),
         };
     }
     async markAsRead(notificationId, userId) {
@@ -27,7 +28,7 @@ export class NotificationService {
             throw new createHttpError.NotFound(Message.NOTIFICATION_NOT_FOUND);
         }
         if (notification.userId !== userId) {
-            throw new createHttpError.Forbidden(Message.NOTIFICATION_NOT_FOUND);
+            throw new createHttpError.Forbidden(Message.FORBIDDEN);
         }
         const updatedNotification = await prisma.notification.update({
             where: {
@@ -39,7 +40,7 @@ export class NotificationService {
         });
         return {
             message: Message.NOTIFICATION_MARKED_AS_READ,
-            notification: updatedNotification,
+            notification: toNotificationResponseDto(updatedNotification),
         };
     }
 }

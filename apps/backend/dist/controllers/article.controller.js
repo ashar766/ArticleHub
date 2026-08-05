@@ -52,4 +52,8 @@ export class ArticleController {
         const result = await this.articleService.reject(req.params.id, reason);
         return res.json(result);
     }
+    async getDashboardStats(req, res) {
+        const result = await this.articleService.getDashboardStats();
+        return res.json(result);
+    }
 }
