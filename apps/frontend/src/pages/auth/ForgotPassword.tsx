@@ -48,8 +48,11 @@ function ForgotPassword() {
             Login
           </Link>
 
-          <Link to="/signup" className="text-yellow-600 hover:underline">
-            Create Account
+          <Link
+            to="/reset-password"
+            className="text-yellow-600 hover:underline"
+          >
+            Reset Password
           </Link>
         </div>
       </form>
