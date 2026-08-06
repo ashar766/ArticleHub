@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import UserLayout from "../../layouts/UserLayout";
+import MainLayout from "../../layouts/MainLayout";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 
@@ -121,14 +121,14 @@ function EditArticle() {
 
   if (loading) {
     return (
-      <UserLayout>
+      <MainLayout>
         <p>Loading article...</p>
-      </UserLayout>
+      </MainLayout>
     );
   }
 
   return (
-    <UserLayout>
+    <MainLayout>
       <div className="mx-auto max-w-3xl rounded-lg bg-white p-6 shadow">
         <h1 className="mb-6 text-3xl font-bold">Edit Article</h1>
 
@@ -176,7 +176,7 @@ function EditArticle() {
           </Button>
         </form>
       </div>
-    </UserLayout>
+    </MainLayout>
   );
 }
 
