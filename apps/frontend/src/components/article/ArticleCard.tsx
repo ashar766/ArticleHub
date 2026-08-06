@@ -32,7 +32,7 @@ function ArticleCard({ article }: Props) {
         <div className="h-[320px] md:h-[320px]">
           {article.image ? (
             <img
-              src={`http://localhost:3000${article.image}`}
+              src={`${import.meta.env.VITE_API_URL}${article.image}`}
               alt={article.title}
               className="h-full w-full object-contain"
             />

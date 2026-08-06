@@ -135,7 +135,7 @@ function PendingArticles() {
                   <div className="flex h-[320px] items-center justify-center bg-gray-100 p-5">
                     {article.image ? (
                       <img
-                        src={`http://localhost:3000${article.image}`}
+                        src={`${import.meta.env.VITE_API_URL}${article.image}`}
                         alt={article.title}
                         className="h-full w-full rounded-xl object-contain"
                       />
