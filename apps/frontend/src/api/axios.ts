@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: `${API_URL}/api`,
   headers: {
     "Content-Type": "application/json",
   },
@@ -18,16 +20,12 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error),
 );
 
 // Refresh token when access token expires
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
 
   async (error) => {
     const originalRequest = error.config;
@@ -37,16 +35,12 @@ api.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem("refreshToken");
-        if (!refreshToken) {
-          throw error;
-        }
 
-        const response = await axios.post(
-          "http://localhost:3000/api/auth/refresh-token",
-          {
-            refreshToken,
-          },
-        );
+        if (!refreshToken) throw error;
+
+        const response = await axios.post(`${API_URL}/api/auth/refresh-token`, {
+          refreshToken,
+        });
 
         const newAccessToken = response.data.accessToken;
 
