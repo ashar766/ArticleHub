@@ -180,7 +180,11 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 
               {user?.role === Role.ADMIN && (
                 <>
-                  <NavLink to="/admin" end className={navLinkClass}>
+                  <NavLink
+                    to="/admin"
+                    onClick={closeMenu}
+                    className="block rounded-md px-3 py-2 hover:bg-gray-100"
+                  >
                     Dashboard
                   </NavLink>
 
