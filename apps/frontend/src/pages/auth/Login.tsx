@@ -24,7 +24,7 @@ function Login() {
     formState: { errors, isSubmitting },
   } = useForm<LoginForm>({
     resolver: zodResolver(LoginSchema),
-  }); //So this whole block is just saying: Set up the login form so it can check the user’s email/password and handle submission.
+  });
 
   const onSubmit = async (data: LoginForm) => {
     try {
@@ -39,17 +39,24 @@ function Login() {
       }
     } catch (error) {
       console.error(error);
-      alert("Invalid email or password");
+      alert("Invalid email or password.");
     }
   };
 
   return (
-    <AuthLayout title="Login">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <AuthLayout title="Welcome Back">
+      <div className="mb-6">
+        <p className="text-center text-sm text-gray-600 sm:text-base">
+          Sign in to access your account and continue managing your articles.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <Input
-          label="Email"
+          label="Email Address"
           type="email"
           placeholder="Enter your email"
+          autoComplete="email"
           {...register("email")}
           error={errors.email?.message}
         />
@@ -58,23 +65,30 @@ function Login() {
           label="Password"
           type="password"
           placeholder="Enter your password"
+          autoComplete="current-password"
           {...register("password")}
           error={errors.password?.message}
         />
 
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Logging in..." : "Login"}
-        </Button>
-
-        <div className="flex justify-between text-sm">
+        <div className="text-right">
           <Link
             to="/forgot-password"
-            className="text-yellow-600 hover:underline"
+            className="text-sm font-medium text-yellow-600 transition hover:text-yellow-700 hover:underline"
           >
             Forgot Password?
           </Link>
+        </div>
 
-          <Link to="/signup" className="text-yellow-600 hover:underline">
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Signing In..." : "Sign In"}
+        </Button>
+
+        <div className="border-t border-gray-200 pt-5 text-center text-sm text-gray-600">
+          Don't have an account?{" "}
+          <Link
+            to="/signup"
+            className="font-semibold text-yellow-600 transition hover:text-yellow-700 hover:underline"
+          >
             Create Account
           </Link>
         </div>

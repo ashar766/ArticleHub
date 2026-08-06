@@ -15,7 +15,6 @@ type ArticleForm = {
 
 function EditArticle() {
   const { id } = useParams();
-
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<ArticleForm>({
@@ -24,11 +23,9 @@ function EditArticle() {
   });
 
   const [oldImage, setOldImage] = useState("");
-
   const [imagePreview, setImagePreview] = useState("");
 
   const [loading, setLoading] = useState(true);
-
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -45,7 +42,6 @@ function EditArticle() {
 
       setFormData({
         title: response.article.title,
-
         content: response.article.content,
       });
 
@@ -54,7 +50,6 @@ function EditArticle() {
       }
     } catch (error) {
       console.error(error);
-
       alert("Unable to load article");
     } finally {
       setLoading(false);
@@ -66,7 +61,6 @@ function EditArticle() {
   ) => {
     setFormData({
       ...formData,
-
       [e.target.name]: e.target.value,
     });
   };
@@ -77,7 +71,6 @@ function EditArticle() {
     if (file) {
       setFormData({
         ...formData,
-
         image: file,
       });
 
@@ -98,7 +91,6 @@ function EditArticle() {
       const data = new FormData();
 
       data.append("title", formData.title);
-
       data.append("content", formData.content);
 
       if (formData.image) {
@@ -112,7 +104,6 @@ function EditArticle() {
       navigate("/my-articles");
     } catch (error) {
       console.error(error);
-
       alert("Unable to update article");
     } finally {
       setSaving(false);
@@ -122,59 +113,89 @@ function EditArticle() {
   if (loading) {
     return (
       <MainLayout>
-        <p>Loading article...</p>
+        <div className="mx-auto flex min-h-[50vh] max-w-6xl items-center justify-center px-4">
+          <p className="text-lg font-medium text-gray-600">
+            Loading article...
+          </p>
+        </div>
       </MainLayout>
     );
   }
 
   return (
     <MainLayout>
-      <div className="mx-auto max-w-3xl rounded-lg bg-white p-6 shadow">
-        <h1 className="mb-6 text-3xl font-bold">Edit Article</h1>
+      <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-lg">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-yellow-500 to-amber-400 px-6 py-6 text-white sm:px-8">
+            <h1 className="text-2xl font-bold sm:text-3xl">Edit Article</h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-          />
+            <p className="mt-2 text-sm text-yellow-100 sm:text-base">
+              Update your article and save your latest changes.
+            </p>
+          </div>
 
-          <div>
-            <label className="mb-2 block font-medium">Content</label>
-
-            <textarea
-              name="content"
-              rows={8}
-              value={formData.content}
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6 p-6 sm:p-8">
+            <Input
+              label="Article Title"
+              name="title"
+              value={formData.title}
               onChange={handleChange}
-              className="w-full rounded-lg border p-3"
             />
-          </div>
 
-          <div>
-            <label className="mb-2 block font-medium">Image</label>
+            <div>
+              <label className="mb-2 block font-medium text-gray-700">
+                Content
+              </label>
 
-            {(imagePreview || oldImage) && (
-              <img
-                src={imagePreview || oldImage}
-                alt="article"
-                className="mb-3 h-48 w-full rounded-lg object-cover"
+              <textarea
+                name="content"
+                rows={10}
+                value={formData.content}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-gray-300 p-4 text-gray-700 outline-none transition focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200"
               />
-            )}
+            </div>
 
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="w-full rounded-lg border p-3"
-            />
-          </div>
+            <div>
+              <label className="mb-2 block font-medium text-gray-700">
+                Article Image
+              </label>
 
-          <Button type="submit" disabled={saving}>
-            {saving ? "Updating..." : "Update Article"}
-          </Button>
-        </form>
+              {(imagePreview || oldImage) && (
+                <div className="mb-4 overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
+                  <img
+                    src={imagePreview || oldImage}
+                    alt="Article"
+                    className="h-56 w-full object-contain sm:h-72"
+                  />
+                </div>
+              )}
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="block w-full cursor-pointer rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4 transition hover:border-yellow-500 hover:bg-yellow-50"
+              />
+            </div>
+
+            <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => navigate("/my-articles")}
+                className="rounded-xl border border-gray-300 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+
+              <Button type="submit" disabled={saving}>
+                {saving ? "Updating..." : "Update Article"}
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </MainLayout>
   );

@@ -30,16 +30,25 @@ function ResetPassword() {
       navigate("/login");
     } catch (error) {
       console.error(error);
-      alert("Unable to reset password");
+      alert("Unable to reset password.");
     }
   };
 
   return (
     <AuthLayout title="Reset Password">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div className="mb-6">
+        <p className="text-center text-sm text-gray-600 sm:text-base">
+          Enter the reset token you received along with your new password to
+          regain access to your account.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <Input
           label="Reset Token"
           type="text"
+          placeholder="Enter your reset token"
+          autoComplete="off"
           {...register("token", {
             required: "Reset token is required",
           })}
@@ -49,14 +58,20 @@ function ResetPassword() {
         <Input
           label="New Password"
           type="password"
+          placeholder="Enter your new password"
+          autoComplete="new-password"
           {...register("password", {
             required: "Password is required",
+            minLength: {
+              value: 8,
+              message: "Password must be at least 8 characters long",
+            },
           })}
           error={errors.password?.message}
         />
 
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Updating..." : "Reset Password"}
+          {isSubmitting ? "Updating Password..." : "Reset Password"}
         </Button>
       </form>
     </AuthLayout>

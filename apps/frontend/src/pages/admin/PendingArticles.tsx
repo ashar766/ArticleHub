@@ -27,9 +27,6 @@ function PendingArticles() {
 
     try {
       const response = await getPendingArticles(token);
-
-      console.log("Pending articles:", response);
-
       setArticles(response.articles);
     } catch (error) {
       console.error("Failed to fetch pending articles", error);
@@ -44,7 +41,6 @@ function PendingArticles() {
     if (!token) return;
 
     await approveArticle(id, token);
-
     fetchPendingArticles();
   };
 
@@ -60,28 +56,30 @@ function PendingArticles() {
 
     try {
       await rejectArticle(id, reason, token);
-
       fetchPendingArticles();
     } catch (error) {
       console.error(error);
-
       alert("Failed to reject article.");
     }
   };
 
   return (
     <MainLayout>
-      <div className="mx-auto max-w-6xl py-10">
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-gray-900">Pending Articles</h1>
-          <p className="mt-2 text-gray-500">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+            Pending Articles
+          </h1>
+
+          <p className="mt-2 text-sm text-gray-500 sm:text-base">
             Review submitted articles and decide whether to approve or reject
             them.
           </p>
         </div>
 
         {articles.length === 0 ? (
-          <div className="rounded-2xl bg-white p-12 text-center shadow">
+          <div className="rounded-2xl bg-white p-8 text-center shadow-md sm:p-12">
             <h2 className="text-2xl font-semibold text-gray-700">
               No Pending Articles
             </h2>
@@ -97,51 +95,56 @@ function PendingArticles() {
                 key={article.id}
                 className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-xl"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2">
-                  {/* Left Side */}
-                  <div className="flex flex-col justify-between p-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2">
+                  {/* Content */}
+                  <div className="flex flex-col justify-between p-5 sm:p-6 lg:p-8">
                     <div>
                       <span className="mb-4 inline-block rounded-full bg-yellow-100 px-4 py-1 text-sm font-semibold text-yellow-700">
                         Pending Review
                       </span>
 
-                      <h2 className="mb-4 text-3xl font-bold text-gray-900">
+                      <h2 className="mb-4 text-2xl font-bold text-gray-900 sm:text-3xl">
                         {article.title}
                       </h2>
 
-                      <p className="line-clamp-6 leading-8 text-gray-600">
+                      <p className="line-clamp-6 text-gray-600 leading-7 sm:leading-8">
                         {article.content}
                       </p>
                     </div>
 
-                    <div className="mt-8 flex gap-4">
+                    <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                       <button
                         onClick={() => handleApprove(article.id)}
-                        className="rounded-xl bg-green-600 px-6 py-2 font-medium text-white transition hover:bg-green-700"
+                        className="rounded-xl bg-green-600 px-6 py-3 font-medium text-white transition hover:bg-green-700"
                       >
                         ✓ Approve
                       </button>
 
                       <button
                         onClick={() => handleReject(article.id)}
-                        className="rounded-xl bg-red-600 px-6 py-2 font-medium text-white transition hover:bg-red-700"
+                        className="rounded-xl bg-red-600 px-6 py-3 font-medium text-white transition hover:bg-red-700"
                       >
                         ✕ Reject
                       </button>
                     </div>
                   </div>
 
-                  {/* Right Side */}
-                  <div className="flex h-[320px] items-center justify-center bg-gray-100 p-5">
-                    {article.image ? (
-                      <img
-                        src={`${import.meta.env.VITE_API_URL}${article.image}`}
-                        alt={article.title}
-                        className="h-full w-full rounded-xl object-contain"
-                      />
-                    ) : (
-                      <div className="text-gray-400">No Image Available</div>
-                    )}
+                  {/* Image */}
+                  <div className="bg-gray-100 p-4">
+                    <div className="h-56 sm:h-72 lg:h-[320px]">
+                      {article.image ? (
+                        <img
+                          src={`${import.meta.env.VITE_API_URL}${article.image}`}
+                          alt={article.title}
+                          loading="lazy"
+                          className="h-full w-full rounded-xl object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-gray-400">
+                          No Image Available
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

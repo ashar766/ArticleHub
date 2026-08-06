@@ -53,20 +53,27 @@ function CreateArticle() {
 
   return (
     <MainLayout>
-      <div className="mx-auto max-w-5xl py-12">
-        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl">
+      <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8 lg:py-10">
+        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-lg">
           {/* Header */}
-          <div className="bg-gradient-to-r from-yellow-600 to-amber-400 px-10 py-8 text-white">
-            <h1 className="text-4xl font-bold">Create New Article</h1>
-            <p className="mt-2 text-yellow-100">
+          <div className="bg-gradient-to-r from-yellow-500 to-amber-400 px-6 py-6 text-white sm:px-8 lg:px-10">
+            <h1 className="text-3xl font-bold sm:text-4xl">
+              Create New Article
+            </h1>
+
+            <p className="mt-2 text-sm text-yellow-100 sm:text-base">
               Share your ideas with the community.
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 p-10">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-6 p-5 sm:p-8 lg:p-10"
+          >
             <Input
               label="Article Title"
+              placeholder="Enter article title"
               {...register("title", {
                 required: "Title is required",
               })}
@@ -74,28 +81,28 @@ function CreateArticle() {
             />
 
             <div>
-              <label className="mb-2 block text-lg font-semibold text-gray-700">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Content
               </label>
 
               <textarea
                 rows={10}
+                placeholder="Write your article here..."
                 {...register("content", {
                   required: "Content is required",
                 })}
-                className="w-full rounded-xl border border-gray-300 p-4 text-gray-700 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                placeholder="Write your article here..."
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none transition duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
               />
 
               {errors.content && (
-                <p className="mt-2 text-sm text-red-500">
+                <p className="mt-2 text-sm text-red-600">
                   {errors.content.message}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="mb-2 block text-lg font-semibold text-gray-700">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Featured Image
               </label>
 
@@ -103,12 +110,16 @@ function CreateArticle() {
                 type="file"
                 accept="image/*"
                 {...register("image")}
-                className="block w-full cursor-pointer rounded-xl border border-dashed border-gray-400 bg-gray-50 p-4 transition hover:border-blue-500 hover:bg-blue-50"
+                className="block w-full cursor-pointer rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-sm text-gray-600 transition duration-200 file:mr-4 file:rounded-md file:border-0 file:bg-yellow-500 file:px-4 file:py-2 file:font-medium file:text-white hover:border-yellow-500 hover:bg-yellow-50"
               />
             </div>
 
             <div className="flex justify-end">
-              <Button type="submit" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full sm:w-auto sm:px-8"
+              >
                 {isSubmitting ? "Publishing..." : "Publish Article"}
               </Button>
             </div>

@@ -30,73 +30,81 @@ function AdminDashboard() {
 
     try {
       const response = await getDashboardStats(token);
-
       setStats(response.stats);
     } catch (error) {
       console.error(error);
     }
   };
+
   return (
     <MainLayout>
-      <div className="mx-auto max-w-7xl py-10">
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+            Admin Dashboard
+          </h1>
 
-          <p className="mt-2 text-gray-500">
+          <p className="mt-2 text-sm text-gray-500 sm:text-base">
             Welcome back. Manage articles and monitor the platform.
           </p>
         </div>
 
         {/* Statistics */}
-        <div className="grid gap-6 md:grid-cols-4">
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <p className="text-gray-500">Total Articles</p>
-            <h2 className="mt-2 text-4xl font-bold">{stats.totalArticles}</h2>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-2xl bg-white p-6 shadow-md transition hover:-translate-y-1 hover:shadow-lg">
+            <p className="text-sm text-gray-500">Total Articles</p>
+            <h2 className="mt-2 text-3xl font-bold sm:text-4xl">
+              {stats.totalArticles}
+            </h2>
           </div>
 
-          <div className="rounded-2xl bg-yellow-100 p-6 shadow">
-            <p className="text-yellow-700">Pending</p>
-            <h2 className="mt-2 text-4xl font-bold">{stats.pendingArticles}</h2>
+          <div className="rounded-2xl bg-yellow-50 p-6 shadow-md transition hover:-translate-y-1 hover:shadow-lg">
+            <p className="text-sm font-medium text-yellow-700">Pending</p>
+            <h2 className="mt-2 text-3xl font-bold sm:text-4xl">
+              {stats.pendingArticles}
+            </h2>
           </div>
 
-          <div className="rounded-2xl bg-green-100 p-6 shadow">
-            <p className="text-green-700">Approved</p>
-            <h2 className="mt-2 text-4xl font-bold">
+          <div className="rounded-2xl bg-green-50 p-6 shadow-md transition hover:-translate-y-1 hover:shadow-lg">
+            <p className="text-sm font-medium text-green-700">Approved</p>
+            <h2 className="mt-2 text-3xl font-bold sm:text-4xl">
               {stats.approvedArticles}
             </h2>
           </div>
 
-          <div className="rounded-2xl bg-red-100 p-6 shadow">
-            <p className="text-red-700">Rejected</p>
-            <h2 className="mt-2 text-4xl font-bold">
+          <div className="rounded-2xl bg-red-50 p-6 shadow-md transition hover:-translate-y-1 hover:shadow-lg">
+            <p className="text-sm font-medium text-red-700">Rejected</p>
+            <h2 className="mt-2 text-3xl font-bold sm:text-4xl">
               {stats.rejectedArticles}
             </h2>
           </div>
         </div>
 
         {/* Quick Actions */}
+        <div className="mt-8 rounded-2xl bg-white p-6 shadow-md sm:p-8">
+          <h2 className="mb-6 text-xl font-bold text-gray-900 sm:text-2xl">
+            Quick Actions
+          </h2>
 
-        <div className="mt-10 rounded-2xl bg-white p-8 shadow">
-          <h2 className="mb-6 text-2xl font-bold">Quick Actions</h2>
-
-          <div className="flex flex-wrap gap-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap">
             <Link
               to="/admin/pending"
-              className="rounded-xl bg-yellow-500 px-6 py-3 font-medium text-white hover:bg-yellow-600"
+              className="rounded-xl bg-yellow-500 px-6 py-3 text-center font-medium text-white transition hover:bg-yellow-600"
             >
               Review Pending Articles
             </Link>
 
             <Link
               to="/"
-              className="rounded-xl bg-blue-600 px-6 py-3 font-medium text-white hover:bg-blue-700"
+              className="rounded-xl bg-blue-600 px-6 py-3 text-center font-medium text-white transition hover:bg-blue-700"
             >
               View Website
             </Link>
 
             <Link
               to="/create-article"
-              className="rounded-xl bg-green-600 px-6 py-3 font-medium text-white hover:bg-green-700"
+              className="rounded-xl bg-green-600 px-6 py-3 text-center font-medium text-white transition hover:bg-green-700"
             >
               Create Article
             </Link>
